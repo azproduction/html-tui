@@ -1,0 +1,131 @@
+.menu {
+    background: lightseagreen;
+}
+
+.menu__item {
+    display: inline-block;
+    margin-left: 1px;
+    margin-right: 1px;
+    color: #000;
+    height: 1px;
+}
+
+.content {
+    padding-bottom: 3px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+.panel {
+    width: 50%;
+    border: solid 1px silver;
+    box-sizing: border-box;
+    float: left;
+    height: 100%;
+    background: navy;
+    margin-bottom: -3px;
+}
+
+.panel_state_focused .panel__caption {
+    background: silver;
+    color: #000;
+}
+
+.panel__caption {
+    margin-top: -1px;
+    color: silver;
+}
+
+.file,
+.header {
+    overflow: hidden;
+    height: 1px;
+}
+
+.file_state_focused {
+    background: lightseagreen;
+    color: #000;
+}
+
+.file_type_focused .file__name,
+.file_type_focused .file__size {
+    border-right-color: #000;
+}
+
+.file__name,
+.file__size,
+.file__time,
+.header__name,
+.header__time,
+.header__size {
+    float: left;
+    box-sizing: border-box;
+}
+
+.file__name,
+.header__name {
+    width: 50%;
+    border-right: solid 1px silver;
+}
+
+.file__size,
+.header__size {
+    width: 20%;
+    border-right: solid 1px silver;
+}
+
+.file__size {
+    text-align: right;
+}
+
+.file__time,
+.header__time{
+    width: 30%;
+}
+
+.file__name_type_file {
+    color: silver;
+    padding-left: 1px;
+}
+
+.header__name,
+.header__time,
+.header__size {
+    color: yellow;
+    text-align: center;
+}
+
+.console {
+    margin-top: -3px;
+    height: 3px;
+    overflow: hidden;
+    color: silver;
+    background: #000;
+}
+
+.controls {
+    margin-top: -1px;
+    height: 1px;
+    background: #000;
+}
+
+.control {
+    float: left;
+    height: 1px;
+}
+
+.control__number,
+.control__name {
+    float: left;
+}
+
+.control__number {
+    margin-left: 1px;
+}
+
+.control__name {
+    width: 6px;
+    background: lightseagreen;
+    color: #000;
+}
