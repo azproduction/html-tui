@@ -21,4 +21,4 @@ HTML to TUI (Text user interface) renderer. It is like TurboVision but in pure H
  1Help   2Menu   3View   4Edit   5Copy   6RenMov 7Mkdir  8Delete 9PullDn 10Quit   
 ```
 
-[Live example](http://azproduction.ru/html-cli/)
+[Live example](http://azproduction.ru/html-tui/)
