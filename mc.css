@@ -1,12 +1,14 @@
 .menu {
-    background: lightseagreen;
+    margin: 0;
+    background: white;
+    color: #000;
 }
 
 .menu__item {
     display: inline-block;
     margin-left: 1px;
     margin-right: 1px;
-    color: #000;
+    color: black;
     height: 1px;
 }
 
@@ -15,42 +17,38 @@
     box-sizing: border-box;
     width: 100%;
     height: 100%;
+    background: #000;
 }
 
 .panel {
     width: 50%;
-    border: solid 1px silver;
+    border: solid 1px green;
     box-sizing: border-box;
     float: left;
     height: 100%;
-    background: navy;
     margin-bottom: -3px;
-}
-
-.panel_state_focused .panel__caption {
-    background: silver;
-    color: #000;
 }
 
 .panel__caption {
     margin-top: -1px;
-    color: silver;
+    color: green;
 }
 
 .file,
 .header {
     overflow: hidden;
     height: 1px;
+    color: white;
 }
 
 .file_state_focused {
-    background: lightseagreen;
-    color: #000;
+    background: grey;
+    color: white;
 }
 
 .file_type_focused .file__name,
 .file_type_focused .file__size {
-    border-right-color: #000;
+    border-right-color: black;
 }
 
 .file__name,
@@ -66,13 +64,13 @@
 .file__name,
 .header__name {
     width: 50%;
-    border-right: solid 1px silver;
+    border-right: solid 1px grey;
 }
 
 .file__size,
 .header__size {
     width: 20%;
-    border-right: solid 1px silver;
+    border-right: solid 1px grey;
 }
 
 .file__size {
@@ -85,7 +83,7 @@
 }
 
 .file__name_type_file {
-    color: silver;
+    color: grey;
     padding-left: 1px;
 }
 
@@ -100,14 +98,14 @@
     margin-top: -3px;
     height: 3px;
     overflow: hidden;
-    color: silver;
+    color: grey;
     background: #000;
 }
 
 .controls {
     margin-top: -1px;
     height: 1px;
-    background: #000;
+    background: #fff;
 }
 
 .control {
@@ -122,10 +120,11 @@
 
 .control__number {
     margin-left: 1px;
+    color: red;
 }
 
 .control__name {
     width: 6px;
-    background: lightseagreen;
+    background: #fff;
     color: #000;
 }
