@@ -7,9 +7,13 @@ html, body {
 #dom {
     position: absolute;
     visibility: hidden;
-    font-size: 1px;
+    font-size: 0;
     line-height: 1px;
-    /*letter-spacing: 1px;*/
+    letter-spacing: 1px;
+}
+
+#dom.phantom {
+    font-size: 1px;
 }
 
 #dom.debug {
