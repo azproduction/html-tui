@@ -1,12 +1,29 @@
 // TODO omg omg get rid of this sh!t code...
-var layer = Layer.fromElement(document.querySelector('#dom'));
+var dom = document.querySelector('#dom'),
+    tui = document.querySelector('pre'),
+    layer = Layer.fromElement(dom);
 
 function render() {
     Symbol.mode = 'html';
-    document.querySelector('pre').innerHTML = layer;
+    tui.innerHTML = layer;
 }
 
 render();
+
+if (typeof MutationObserver !== 'undefined') {
+    // create an observer instance
+    var observer = new MutationObserver(function() {
+        render();
+    });
+
+    // pass in the target node, as well as the observer options
+    observer.observe(dom, {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
+}
 
 document.body.addEventListener('keydown', function (e) {
     if (e.keyCode !== 40) return;
@@ -15,9 +32,8 @@ document.body.addEventListener('keydown', function (e) {
     if (nextFile) {
         file.classList.remove('file_state_focused');
         nextFile.classList.add('file_state_focused');
-        render();
     }
-});
+}, false);
 
 document.body.addEventListener('keydown', function (e) {
     if (e.keyCode !== 38) return;
@@ -26,9 +42,8 @@ document.body.addEventListener('keydown', function (e) {
     if (prevFile && prevFile.classList.contains('file')) {
         file.classList.remove('file_state_focused');
         prevFile.classList.add('file_state_focused');
-        render();
     }
-});
+}, false);
 
 Symbol.mode = 'ascii';
 console.log(layer);
