@@ -93,6 +93,10 @@
     padding-left: 1px;
 }
 
+.file_state_focused .file__name_type_file {
+    color: white;
+}
+
 .header__name,
 .header__time,
 .header__size {
