@@ -14,6 +14,8 @@
 
 .content {
     padding-bottom: 3px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
@@ -23,6 +25,8 @@
 .panel {
     width: 50%;
     border: solid 1px green;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     float: left;
     height: 100%;
@@ -58,6 +62,8 @@
 .header__time,
 .header__size {
     float: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
