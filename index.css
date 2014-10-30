@@ -10,17 +10,11 @@ html, body {
     font-size: 0;
     line-height: 1px;
     letter-spacing: 1px;
+    transform: scale(10, 16.4) translate(37px, 9px);
 }
 
 #dom.phantom {
     font-size: 1px;
-}
-
-#dom.debug {
-    -webkit-transform: translate(370px, 190px) scale(10, 10);
-    -moz-transform: translate(370px, 190px) scale(10, 10);
-    transform: translate(370px, 190px) scale(10, 10);
-    visibility: visible;
 }
 
 #dom ul {
