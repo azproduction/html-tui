@@ -1,4 +1,3 @@
-// TODO omg omg get rid of this sh!t code...
 var dom = document.querySelector('#dom'),
     tui = document.querySelector('pre'),
     layer = Layer.fromElement(dom);
