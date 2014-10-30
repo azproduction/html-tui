@@ -25,4 +25,4 @@ Phantom will render intreface above and will take this screensot
 
 ![](index.png)
 
-[Live example](http://azproduction.ru/html-tui/)
+[Live example](http://azproduction.github.io/html-tui/)
