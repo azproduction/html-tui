@@ -5,5 +5,6 @@ page.onConsoleMessage = function (msg) {
 };
 
 page.open('index.html', function (status) {
+    /* global phantom: true*/
     phantom.exit();
 });

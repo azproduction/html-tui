@@ -13,13 +13,18 @@
     "babel-runtime": "^4.7.12",
     "css-loader": "^0.9.1",
     "http-server": "^0.7.5",
+    "husky": "^0.7.0",
+    "jscs": "^1.11.3",
+    "jshint": "^2.6.3",
     "object-assign": "^2.0.0",
     "style-loader": "^0.8.3",
     "webpack": "^1.7.3",
     "webpack-dev-server": "^1.7.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jshint . && jscs .",
+    "precommit": "npm test",
+    "prepush": "npm test",
     "hot-dev-server": "webpack-dev-server --config example/webpack-hot.config.js --hot --progress --colors --port 2992 --inline",
     "start": "http-server example",
     "ansi": "cd example && phantomjs index-phantom.js"

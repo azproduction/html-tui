@@ -3,6 +3,6 @@ var config = require('./webpack.config');
 
 module.exports = objectAssign({}, config, {
     output: objectAssign({}, config.output, {
-		publicPath: 'http://localhost:2992/_assets/'
-	})
+        publicPath: 'http://localhost:2992/_assets/'
+    })
 });
