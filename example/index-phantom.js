@@ -4,7 +4,6 @@ page.onConsoleMessage = function (msg) {
     console.log(msg);
 };
 
-page.open('./index.html', function (status) {
-    page.render('index.png');
+page.open('index.html', function (status) {
     phantom.exit();
 });

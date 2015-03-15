@@ -5,7 +5,7 @@ HTML to TUI (Text user interface) renderer. It is like TurboVision but in pure H
 ## Example
 
 ```bash
-$ phantomjs index-phantom.js
+$ npm run ansi
  Left   File   Command   Options   Right
 ┌<─/var/log/nginx─────────────────────v>┐┌<─~/Documents/html-cli───────────────v>┐
 │                                       ││                                       │
@@ -19,9 +19,8 @@ $ phantomjs index-phantom.js
 └───────────────────────────────────────┘└───────────────────────────────────────┘
 ~/Documents/html-cli$ node index.js
 
- 1Help   2Menu   3View   4Edit   5Copy   6RenMov 7Mkdir  8Delete 9PullDn 10Quit   
+ 1Help   2Menu   3View   4Edit   5Copy   6RenMov 7Mkdir  8Delete 9PullDn 10Quit
 ```
-Phantom will render intreface above and will take this screensot
 
 ![](index.png)
 

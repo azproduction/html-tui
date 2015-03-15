@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HTML TUI render example</title>
+    <script src="_assets/index.js"></script>
+    <!--<script src="http://localhost:2992/_assets/index.js"></script>-->
+</head>
+<body>
+    <div class="tui-dom" style="width: 100px;height: 20px">
+        <ul class="menu">
+            <li class="menu__item">Left</li>
+            <li class="menu__item">File</li>
+            <li class="menu__item">Command</li>
+            <li class="menu__item">Options</li>
+            <li class="menu__item">Right</li>
+        </ul>
+        <div class="content">
+            <div class="panel">
+                <div class="panel__caption">&lt; /var/log/nginx                     v&gt;</div>
+                <ul class="file-list">
+                    <li class="header">
+                        <div class="header__name">Name</div>
+                        <div class="header__size">Size</div>
+                        <div class="header__time">MTime</div>
+                    </li>
+                    <li class="file file_state_focused">
+                        <div class="file__name">/..</div>
+                        <div class="file__size">4096</div>
+                        <div class="file__time">Nov 16 22:24</div>
+                    </li>
+                    <li class="file">
+                        <div class="file__name">/debian</div>
+                        <div class="file__size">4096</div>
+                        <div class="file__time">Nov 16 22:24</div>
+                    </li>
+                    <li class="file">
+                        <div class="file__name file__name_type_file">Makefile</div>
+                        <div class="file__size">4096</div>
+                        <div class="file__time">Nov 16 22:24</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="panel__caption">&lt; ~/Documents/html-cli               v&gt;</div>
+                <ul class="file-list">
+                    <li class="header">
+                        <div class="header__name">Name</div>
+                        <div class="header__size">Size</div>
+                        <div class="header__time">MTime</div>
+                    </li>
+                    <li class="file">
+                        <div class="file__name">/..</div>
+                        <div class="file__size">UP-DIR</div>
+                        <div class="file__time">Oct 11 20:30</div>
+                    </li>
+                    <li class="file">
+                        <div class="file__name">/.idea</div>
+                        <div class="file__size">340</div>
+                        <div class="file__time">Oct 12 00:59</div>
+                    </li>
+                    <li class="file">
+                        <div class="file__name">/lib</div>
+                        <div class="file__size">170</div>
+                        <div class="file__time">Oct 11 23:59</div>
+                    </li>
+                    <li class="file">
+                        <div class="file__name file__name_type_file">Makefile</div>
+                        <div class="file__size">4096</div>
+                        <div class="file__time">Nov 16 22:24</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="console">~/Documents/html-cli$ node index.js</div>
+        <ul class="controls">
+            <li class="control">
+                <div class="control__number">1</div>
+                <div class="control__name">Help</div>
+            </li>
+            <li class="control">
+                <div class="control__number">2</div>
+                <div class="control__name">Menu</div>
+            </li>
+            <li class="control">
+                <div class="control__number">3</div>
+                <div class="control__name">View</div>
+            </li>
+            <li class="control">
+                <div class="control__number">4</div>
+                <div class="control__name">Edit</div>
+            </li>
+            <li class="control">
+                <div class="control__number">5</div>
+                <div class="control__name">Copy</div>
+            </li>
+            <li class="control">
+                <div class="control__number">6</div>
+                <div class="control__name">RenMov</div>
+            </li>
+            <li class="control">
+                <div class="control__number">7</div>
+                <div class="control__name">Mkdir</div>
+            </li>
+            <li class="control">
+                <div class="control__number">8</div>
+                <div class="control__name">Delete</div>
+            </li>
+            <li class="control">
+                <div class="control__number">9</div>
+                <div class="control__name">PullDn</div>
+            </li>
+            <li class="control">
+                <div class="control__number">10</div>
+                <div class="control__name">Quit</div>
+            </li>
+        </ul>
+    </div>
+    <pre class="tui-cli"></pre>
+    <pre>– See also Chrome console log</pre>
+</body>
+</html>

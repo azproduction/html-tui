@@ -1,0 +1,37 @@
+{
+  "name": "html-tui",
+  "version": "0.1.0",
+  "description": "HTML to TUI (Text user interface) renderer. It is like TurboVision but in pure HTML, CSS and JavaScript",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^4.7.12",
+    "babel-loader": "^4.1.0",
+    "babel-runtime": "^4.7.12",
+    "css-loader": "^0.9.1",
+    "http-server": "^0.7.5",
+    "object-assign": "^2.0.0",
+    "style-loader": "^0.8.3",
+    "webpack": "^1.7.3",
+    "webpack-dev-server": "^1.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "hot-dev-server": "webpack-dev-server --config example/webpack-hot.config.js --hot --progress --colors --port 2992 --inline",
+    "start": "http-server example",
+    "ansi": "cd example && phantomjs index-phantom.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azproduction/html-tui.git"
+  },
+  "author": "Mikhail Davydov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/azproduction/html-tui/issues"
+  },
+  "homepage": "https://github.com/azproduction/html-tui"
+}
