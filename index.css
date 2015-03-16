@@ -1,11 +1,12 @@
 .tui-dom {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', monospace;
     position: absolute;
     left: 0;
     top: 0;
     font-size: 1px;
     line-height: 1px;
     letter-spacing: 0.4px;
+    z-index: 2;
     visibility: hidden;
 }
 
@@ -19,6 +20,10 @@
 }
 
 .tui-cli {
+    font-family: 'Courier New', monospace;
+    position: absolute;
+    left: 0;
+    top: 0;
     font-size: 13px;
     line-height: 13px;
     display: inline-block;

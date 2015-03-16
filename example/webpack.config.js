@@ -6,10 +6,10 @@ module.exports = {
         index: path.join(__dirname, 'index.js')
     },
     output: {
-        path: path.join(__dirname, '_assets'),
+        path: path.join(__dirname, 'assets'),
         filename: '[name].js',
         pathinfo: true,
-        publicPath: '/_assets/'
+        publicPath: '/assets/'
     },
     resolve: {
         root: __dirname,

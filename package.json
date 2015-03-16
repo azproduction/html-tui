@@ -27,6 +27,7 @@
     "prepush": "npm test",
     "hot-dev-server": "webpack-dev-server --config example/webpack-hot.config.js --hot --progress --colors --port 2992 --inline",
     "start": "http-server example",
+    "build": "cd example && webpack",
     "ansi": "cd example && phantomjs index-phantom.js"
   },
   "repository": {
