@@ -1,5 +1,5 @@
 import './index.css';
-import TuiElement from '..';
+import {TuiElement} from '..';
 
 requestAnimationFrame(function () {
     var element = new TuiElement(document.querySelector('.tui-dom'));
