@@ -6,7 +6,9 @@
   "directories": {
     "example": "example"
   },
-  "dependencies": {},
+  "dependencies": {
+    "specificity": "^0.1.4"
+  },
   "devDependencies": {
     "babel-core": "^4.7.12",
     "babel-loader": "^4.1.0",
