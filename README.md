@@ -1,6 +1,6 @@
-# html-cli
+# html-tui
 
-HTML to TUI (Text user interface) renderer. It is like TurboVision but in pure HTML, CSS and JavaScript
+HTML to TUI (Text user interface) renderer. It translates DOM Nodes into Text interface.
 
 ## Example
 
@@ -24,4 +24,4 @@ $ npm run ansi
 
 ![](index.png)
 
-[Live example](http://azproduction.github.io/html-tui/)
+[Live example](http://azproduction.github.io/html-tui/example/)
