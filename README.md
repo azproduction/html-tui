@@ -3,7 +3,7 @@
 HTML to TUI (Text user interface) renderer. It translates DOM Nodes into Text interface.
 
 [Demo](http://azproduction.github.io/html-tui/example/)
-[Playground](http://jsbin.com/kigowe/2/edit)
+[Playground](http://jsbin.com/kigowe/2/edit?html,output)
 
 ## Example
 
