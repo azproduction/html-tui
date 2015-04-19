@@ -1,6 +1,6 @@
 {
   "name": "html-tui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "HTML to TUI (Text user interface) renderer. It translates DOM Nodes into Text interface.",
   "main": "index.js",
   "directories": {
