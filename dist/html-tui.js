@@ -104,6 +104,16 @@ var htmlTui =
 	    this.attributes = Array.prototype.slice.call(node.attributes);
 
 	    /**
+	     * @type {object}
+	     */
+	    this.properties = this.getProperties(node);
+
+	    /**
+	     * @type {boolean}
+	     */
+	    this.isActiveEment = node.ownerDocument.activeElement === node;
+
+	    /**
 	     * @type {CssStyle}
 	     */
 	    this.style = node.ownerDocument.defaultView.getComputedStyle(node);
@@ -145,6 +155,24 @@ var htmlTui =
 	          }
 	          return content;
 	        }, []);
+	      }
+	    },
+	    getProperties: {
+
+	      /**
+	       *
+	       * @param node
+	       */
+
+	      value: function getProperties(node) {
+	        return {
+	          value: node.value,
+	          readOnly: node.readOnly,
+	          checked: node.checked,
+	          autofocus: node.autofocus,
+	          selectionStart: node.selectionStart,
+	          selectionEnd: node.selectionEnd
+	        };
 	      }
 	    },
 	    toArray: {
@@ -294,7 +322,9 @@ var htmlTui =
 
 	var defaultSerializer = _interopRequire(__webpack_require__(12));
 
-	var calculateSpecificity = __webpack_require__(14).calculate;
+	var inputSerializer = _interopRequire(__webpack_require__(13));
+
+	var calculateSpecificity = __webpack_require__(15).calculate;
 
 	/**
 	 * Ordered by specificity, the most specific and last added element is at the end
@@ -339,7 +369,7 @@ var htmlTui =
 	        return node[getMatchFunctionFor(node)](serializer.selector);
 	    });
 
-	    // the last serializer is the most specific
+	    // the last serializer is the most specific(by specificity and order of adding)
 	    return matchedSerializers[matchedSerializers.length - 1].serializer;
 	}
 
@@ -352,14 +382,21 @@ var htmlTui =
 	        throw new TypeError("`serializer` should be a function");
 	    }
 
-	    var specificity = calculateSpecificity(selector).specificity;
+	    calculateSpecificity(selector).forEach(function (_ref) {
+	        var selector = _ref.selector;
+	        var specificity = _ref.specificity;
 
-	    serializers.push({ selector: selector, serializer: serializer, specificity: specificity });
+	        serializers.push({ selector: selector, serializer: serializer, specificity: specificity });
+	    });
+
 	    serializers.sort(sortBySpecificity);
 	}
 
 	// Matches on all TuiElements
 	addSerializer("*", defaultSerializer);
+
+	// Matches all inputs
+	addSerializer("input,select,textarea", inputSerializer);
 
 /***/ },
 /* 5 */
@@ -387,6 +424,14 @@ var htmlTui =
 	 * @returns {Array<Array<(TuiSymbol)>>}
 	 */
 	exports.mergeBoxes = mergeBoxes;
+
+	/**
+	 *
+	 * @param {String} content
+	 * @param {Object} style
+	 * @returns {Array<Array<(TuiSymbol)>>}
+	 */
+	exports.renderTextBox = renderTextBox;
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
@@ -398,7 +443,7 @@ var htmlTui =
 
 	var TuiSymbol = _interopRequire(_tuiSymbol);
 
-	var BACKGROUND_CHARACTER = __webpack_require__(13).BACKGROUND_CHARACTER;
+	var BACKGROUND_CHARACTER = __webpack_require__(14).BACKGROUND_CHARACTER;
 
 	function getNormalizedClientRectOf(boundingBox) {
 	    return {
@@ -488,13 +533,19 @@ var htmlTui =
 	    return box;
 	}
 
+	function renderTextBox(content, style) {
+	    var symbols = String(content).split("").map(function (symbol) {
+	        return new TuiSymbol(symbol, style);
+	    });
+
+	    return [symbols];
+	}
+
 /***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
-	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -504,8 +555,7 @@ var htmlTui =
 
 	var getNormalizedClientRectOf = _utils.getNormalizedClientRectOf;
 	var shiftBox = _utils.shiftBox;
-
-	var TuiSymbol = _interopRequire(__webpack_require__(7));
+	var renderTextBox = _utils.renderTextBox;
 
 	var TuiText = (function () {
 	    /**
@@ -551,18 +601,9 @@ var htmlTui =
 	             */
 
 	            value: function _renderTextBox() {
-	                var _this = this;
-
 	                var content = this.content.replace(/\s\s+/g, " ");
 
-	                var symbols = content.split("").map(function (symbol) {
-	                    return new TuiSymbol(symbol, {
-	                        color: _this.style.color,
-	                        backgroundColor: _this.style.backgroundColor
-	                    });
-	                });
-
-	                return [symbols];
+	                return renderTextBox(content, this.style);
 	            }
 	        },
 	        toArray: {
@@ -635,7 +676,7 @@ var htmlTui =
 	    value: true
 	});
 
-	var BACKGROUND_CHARACTER = __webpack_require__(13).BACKGROUND_CHARACTER;
+	var BACKGROUND_CHARACTER = __webpack_require__(14).BACKGROUND_CHARACTER;
 
 	function isSameStyleSymbol(symbolA, symbolB) {
 	    return symbolA.style.color === symbolB.style.color && symbolA.style.backgroundColor === symbolB.style.backgroundColor;
@@ -941,7 +982,7 @@ var htmlTui =
 	var mergeBoxes = _utils.mergeBoxes;
 	var shiftBox = _utils.shiftBox;
 
-	var borderScheme = __webpack_require__(15).borderScheme;
+	var borderScheme = __webpack_require__(16).borderScheme;
 
 	var TuiSymbol = _interopRequire(__webpack_require__(7));
 
@@ -1082,6 +1123,203 @@ var htmlTui =
 
 	"use strict";
 
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	var _utils = __webpack_require__(5);
+
+	var mergeBoxes = _utils.mergeBoxes;
+	var shiftBox = _utils.shiftBox;
+	var renderTextBox = _utils.renderTextBox;
+
+	var defaultSerializer = _interopRequire(__webpack_require__(12));
+
+	/**
+	 * Max width of input text in viewport
+	 *
+	 * @param {object} style
+	 * @param {ClientRect} boundingBox
+	 * @returns {number}
+	 */
+	function getInputMaxContentWidth(_ref) {
+	    var style = _ref.style;
+	    var boundingBox = _ref.boundingBox;
+
+	    var leftInputBorder = parseInt(style.borderLeftWidth) + parseInt(style.paddingLeft);
+	    var rightInputBorder = parseInt(style.borderRightWidth) + parseInt(style.paddingRight);
+
+	    return boundingBox.width - leftInputBorder - rightInputBorder;
+	}
+
+	/**
+	 * Return bounding box of input's value
+	 *
+	 * @param {object} style
+	 * @param {ClientRect}boundingBox
+	 * @param {string} value
+	 * @returns {ClientRect}
+	 */
+	function getInputTextBoundingBox(_ref) {
+	    var style = _ref.style;
+	    var boundingBox = _ref.boundingBox;
+	    var value = _ref.properties.value;
+
+	    var width = Number(value.length);
+	    var height = 1;
+	    var left = boundingBox.left;
+	    var top = boundingBox.top;
+
+	    left += parseInt(style.borderLeftWidth);
+	    left += parseInt(style.paddingLeft);
+
+	    top += parseInt(style.borderTopWidth);
+	    top += parseInt(style.paddingTop);
+
+	    return {
+	        left: left,
+	        top: top,
+	        bottom: top + height,
+	        right: left + width,
+	        height: height,
+	        width: width
+	    };
+	}
+
+	/**
+	 * Returns range which should fit into input
+	 *
+	 * @param {TuiElement} tuiElement
+	 * @returns {{start: number, end: number}}
+	 */
+	function getVisibleTextRange(tuiElement) {
+	    /* jshint maxstatements: 20 */
+	    var _tuiElement$properties = tuiElement.properties;
+	    var value = _tuiElement$properties.value;
+	    var selectionEnd = _tuiElement$properties.selectionEnd;
+
+	    var inputContentWidth = getInputMaxContentWidth(tuiElement);
+	    var halfOfInputContentWidth = inputContentWidth / 2;
+	    var start = Math.floor(selectionEnd - halfOfInputContentWidth) + 1;
+	    var end = Math.ceil(selectionEnd + halfOfInputContentWidth) + 1;
+
+	    // Cursor at the end of the box
+	    if (value.length === selectionEnd && value.length + 1 > inputContentWidth) {
+	        end -= 1;
+	    }
+
+	    if (start < 0) {
+	        end -= start;
+	        start = 0;
+	    }
+
+	    if (end > value.length) {
+	        start -= end - value.length;
+	        end = value.length;
+	    }
+
+	    if (start < 0) {
+	        start = 0;
+	    }
+
+	    return {
+	        start: start,
+	        end: end
+	    };
+	}
+
+	/**
+	 *
+	 * @param {object} style
+	 * @param {string} value
+	 * @param {number} selectionEnd
+	 * @param {ClientRect} textBoundingBox
+	 * @param {object} visibleTextRange
+	 * @param {number} visibleTextRange.start
+	 * @param {number} visibleTextRange.end
+	 * @returns {Array<Array<TuiSymbol>>}
+	 */
+	function renderCursorBox(_ref, textBoundingBox, visibleTextRange) {
+	    var style = _ref.style;
+	    var _ref$properties = _ref.properties;
+	    var value = _ref$properties.value;
+	    var selectionEnd = _ref$properties.selectionEnd;
+
+	    // Render cursor
+	    var cursorWidth = 1;
+	    var textAtCursor = value.substr(selectionEnd, cursorWidth);
+
+	    // End of text
+	    if (textAtCursor === "") {
+	        textAtCursor = " ";
+	    }
+
+	    var cursorLeft = textBoundingBox.left + selectionEnd - visibleTextRange.start;
+	    var cursorRight = cursorLeft + cursorWidth;
+
+	    var cursorBoundingBox = {
+	        left: cursorLeft,
+	        top: textBoundingBox.top,
+	        bottom: textBoundingBox.bottom,
+	        right: cursorRight,
+	        height: textBoundingBox.height,
+	        width: cursorWidth
+	    };
+
+	    // Invert background and text color
+	    var cursorBox = renderTextBox(textAtCursor, {
+	        color: style.backgroundColor,
+	        backgroundColor: style.color
+	    });
+
+	    return shiftBox(cursorBox, cursorBoundingBox);
+	}
+
+	/**
+	 *
+	 * @param {object} style
+	 * @param {string} value
+	 * @param {ClientRect} textBoundingBox
+	 * @param {object} visibleTextRange
+	 * @param {number} visibleTextRange.start
+	 * @param {number} visibleTextRange.end
+	 * @returns {Array<Array<TuiSymbol>>}
+	 */
+	function renderInputTextBox(_ref, textBoundingBox, visibleTextRange) {
+	    var style = _ref.style;
+	    var value = _ref.properties.value;
+
+	    var textInViewport = value.slice(visibleTextRange.start, visibleTextRange.end);
+	    var textBox = renderTextBox(textInViewport, style);
+
+	    return shiftBox(textBox, textBoundingBox);
+	}
+
+	/**
+	 * @param {TuiElement} tuiElement
+	 * @returns {Array<Array<(TuiSymbol)>>}
+	 */
+
+	module.exports = function (tuiElement) {
+	    // Compute common measurements
+	    var textBoundingBox = getInputTextBoundingBox(tuiElement);
+	    var visibleTextRange = getVisibleTextRange(tuiElement);
+
+	    // Render
+	    var inputBox = defaultSerializer(tuiElement);
+	    var textBox = renderInputTextBox(tuiElement, textBoundingBox, visibleTextRange);
+	    var cursorBox = renderCursorBox(tuiElement, textBoundingBox, visibleTextRange);
+
+	    inputBox = mergeBoxes(inputBox, textBox);
+	    inputBox = mergeBoxes(inputBox, cursorBox);
+
+	    return inputBox;
+	};
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -1089,7 +1327,7 @@ var htmlTui =
 	exports.BACKGROUND_CHARACTER = BACKGROUND_CHARACTER;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1241,7 +1479,7 @@ var htmlTui =
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1250,7 +1488,7 @@ var htmlTui =
 	    value: true
 	});
 
-	var BACKGROUND_CHARACTER = __webpack_require__(13).BACKGROUND_CHARACTER;
+	var BACKGROUND_CHARACTER = __webpack_require__(14).BACKGROUND_CHARACTER;
 
 	var borderScheme = {
 	    x: {

@@ -135,6 +135,13 @@
     background: #000;
 }
 
+.console__input {
+    border: none;
+    color: inherit;
+    background: inherit;
+    height: 1px;
+}
+
 .controls {
     margin-top: -1px;
     height: 1px;

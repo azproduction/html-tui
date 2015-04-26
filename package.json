@@ -27,7 +27,7 @@
     "test": "jshint . && jscs .",
     "precommit": "npm test",
     "prepush": "npm test",
-    "hot-dev-server": "webpack-dev-server --config example/webpack-hot.config.js --hot --progress --colors --port 2992 --inline",
+    "hot": "webpack-dev-server --config example/webpack-hot.config.js --hot --progress --colors --port 2992 --inline",
     "start": "http-server example",
     "build-example": "cd example && webpack",
     "build": "webpack index.js dist/html-tui.js && NODE_ENV=production webpack index.js dist/html-tui.min.js",

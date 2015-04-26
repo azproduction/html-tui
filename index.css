@@ -6,8 +6,8 @@
     font-size: 1px;
     line-height: 1px;
     letter-spacing: 0.4px;
-    z-index: 2;
     visibility: visible;
+    z-index: -1;
 }
 
 .tui-dom * {
