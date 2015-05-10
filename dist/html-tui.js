@@ -76,132 +76,156 @@ var htmlTui =
 	var TuiText = _interopRequire(__webpack_require__(6));
 
 	var TuiElement = (function () {
-	  /**
-	   *
-	   * @param {Node} node
-	   * @constructor
-	   */
+	    /**
+	     *
+	     * @param {Node} node
+	     * @constructor
+	     */
 
-	  function TuiElement(node) {
-	    _classCallCheck(this, TuiElement);
+	    function TuiElement(node) {
+	        _classCallCheck(this, TuiElement);
 
-	    if (node.nodeType !== 1) {
-	      throw new Error("Only element node is supported");
+	        if (node.nodeType !== 1) {
+	            throw new Error("Only element node is supported");
+	        }
+
+	        if (!node.ownerDocument && !node.ownerDocument.defaultView) {
+	            throw new Error("Can not serialize detached node");
+	        }
+
+	        /**
+	         * @type {string}
+	         */
+	        this.tagName = node.tagName.toLowerCase();
+
+	        /**
+	         * @type {{name: string, value: string}[]}
+	         */
+	        this.attributes = Array.prototype.slice.call(node.attributes);
+
+	        /**
+	         * @type {object}
+	         */
+	        this.properties = this.getProperties(node);
+
+	        /**
+	         * @type {boolean}
+	         */
+	        this.isActiveEment = node.ownerDocument.activeElement === node;
+
+	        /**
+	         * @type {CssStyle}
+	         */
+	        this.style = this.getStyle(node);
+
+	        /**
+	         * @type {ClientRect}
+	         */
+	        this.boundingBox = getNormalizedClientRectOf(node.getBoundingClientRect());
+
+	        /**
+	         * @type {(TuiElement|TuiText)[]}
+	         */
+	        this.content = this.getContentOf(node);
+
+	        // TODO currently serializer is bound to HTMLElement
+	        /**
+	         * @type {function}
+	         */
+	        this.serializeNode = selectSerializerFor(node);
 	    }
 
-	    if (!node.ownerDocument && !node.ownerDocument.defaultView) {
-	      throw new Error("Can not serialize detached node");
-	    }
+	    _createClass(TuiElement, {
+	        getContentOf: {
 
-	    /**
-	     * @type {string}
-	     */
-	    this.tagName = node.tagName.toLowerCase();
+	            /**
+	             * @param {Node} node
+	             * @returns {(TuiElement|TuiText)[]}
+	             */
 
-	    /**
-	     * @type {{name: string, value: string}[]}
-	     */
-	    this.attributes = Array.prototype.slice.call(node.attributes);
+	            value: function getContentOf(node) {
+	                var _this = this;
 
-	    /**
-	     * @type {object}
-	     */
-	    this.properties = this.getProperties(node);
+	                return Array.prototype.slice.call(node.childNodes).reduce(function (content, node) {
+	                    if (node.nodeType === 1) {
+	                        content.push(new TuiElement(node));
+	                    }
+	                    if (node.nodeType === 3) {
+	                        content.push(new TuiText(node, _this.style));
+	                    }
+	                    return content;
+	                }, []);
+	            }
+	        },
+	        getProperties: {
 
-	    /**
-	     * @type {boolean}
-	     */
-	    this.isActiveEment = node.ownerDocument.activeElement === node;
+	            /**
+	             *
+	             * @param node
+	             */
 
-	    /**
-	     * @type {CssStyle}
-	     */
-	    this.style = node.ownerDocument.defaultView.getComputedStyle(node);
+	            value: function getProperties(node) {
+	                return {
+	                    value: node.value,
+	                    checked: node.checked,
+	                    selectionStart: node.selectionStart,
+	                    selectionEnd: node.selectionEnd
+	                };
+	            }
+	        },
+	        getStyle: {
+	            value: function getStyle(node) {
+	                var computedStyle = node.ownerDocument.defaultView.getComputedStyle(node);
 
-	    /**
-	     * @type {ClientRect}
-	     */
-	    this.boundingBox = getNormalizedClientRectOf(node.getBoundingClientRect());
+	                // Support only subset of CSS
+	                return {
+	                    color: computedStyle.color,
+	                    backgroundColor: computedStyle.backgroundColor,
 
-	    /**
-	     * @type {(TuiElement|TuiText)[]}
-	     */
-	    this.content = this.getContentOf(node);
+	                    borderLeftColor: computedStyle.borderLeftColor,
+	                    borderRightColor: computedStyle.borderRightColor,
+	                    borderTopColor: computedStyle.borderTopColor,
+	                    borderBottomColor: computedStyle.borderBottomColor,
 
-	    // TODO currently serializer is bound to HTMLElement
-	    /**
-	     * @type {function}
-	     */
-	    this.serializeNode = selectSerializerFor(node);
-	  }
+	                    borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
+	                    borderRightWidth: parseInt(computedStyle.borderRightWidth),
+	                    borderTopWidth: parseInt(computedStyle.borderTopWidth),
+	                    borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
 
-	  _createClass(TuiElement, {
-	    getContentOf: {
+	                    paddingLeft: parseInt(computedStyle.paddingLeft),
+	                    paddingRight: parseInt(computedStyle.paddingRight),
+	                    paddingTop: parseInt(computedStyle.paddingTop),
+	                    paddingBottom: parseInt(computedStyle.paddingBottom)
+	                };
+	            }
+	        },
+	        toArray: {
 
-	      /**
-	       * @param {Node} node
-	       * @returns {(TuiElement|TuiText)[]}
-	       */
+	            /**
+	             *
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
 
-	      value: function getContentOf(node) {
-	        var _this = this;
+	            value: function toArray() {
+	                return this.serializeNode.call(null, this);
+	            }
+	        },
+	        toString: {
 
-	        return Array.prototype.slice.call(node.childNodes).reduce(function (content, node) {
-	          if (node.nodeType === 1) {
-	            content.push(new TuiElement(node));
-	          }
-	          if (node.nodeType === 3) {
-	            content.push(new TuiText(node, _this.style));
-	          }
-	          return content;
-	        }, []);
-	      }
-	    },
-	    getProperties: {
+	            /**
+	             *
+	             * @returns {string}
+	             */
 
-	      /**
-	       *
-	       * @param node
-	       */
+	            value: function toString() {
+	                return this.toArray().map(function (row) {
+	                    return row.join("");
+	                }).join("\n");
+	            }
+	        }
+	    });
 
-	      value: function getProperties(node) {
-	        return {
-	          value: node.value,
-	          readOnly: node.readOnly,
-	          checked: node.checked,
-	          autofocus: node.autofocus,
-	          selectionStart: node.selectionStart,
-	          selectionEnd: node.selectionEnd
-	        };
-	      }
-	    },
-	    toArray: {
-
-	      /**
-	       *
-	       * @returns {Array<Array<(TuiSymbol)>>}
-	       */
-
-	      value: function toArray() {
-	        return this.serializeNode.call(null, this);
-	      }
-	    },
-	    toString: {
-
-	      /**
-	       *
-	       * @returns {string}
-	       */
-
-	      value: function toString() {
-	        return this.toArray().map(function (row) {
-	          return row.join("");
-	        }).join("\n");
-	      }
-	    }
-	  });
-
-	  return TuiElement;
+	    return TuiElement;
 	})();
 
 	module.exports = TuiElement;
@@ -456,6 +480,23 @@ var htmlTui =
 	    };
 	}
 
+	//export function getNormalizedClientRectOf(boundingBox) {
+	//    var top = Math.round(boundingBox.top);
+	//    var right = Math.round(boundingBox.right);
+	//    var bottom = Math.round(boundingBox.bottom);
+	//    var left = Math.round(boundingBox.left);
+	//
+	//    return {
+	//        bottom,
+	//        left,
+	//        right,
+	//        top,
+	//
+	//        width: right - left,
+	//        height: bottom - top
+	//    };
+	//}
+
 	/**
 	 * @param {number} length
 	 * @param {*} content
@@ -481,8 +522,9 @@ var htmlTui =
 	        row.unshift.apply(row, paddingLeft);
 	    });
 
-	    for (; top--;) {
+	    while (top > 0) {
 	        box.unshift(paddingTop);
+	        top--;
 	    }
 
 	    return box;
@@ -561,13 +603,11 @@ var htmlTui =
 	    /**
 	     *
 	     * @param {Node} node
-	     * @param {CssStyle} [style=null]
+	     * @param {CssStyle} style
 	     * @constructor
 	     */
 
-	    function TuiText(node) {
-	        var style = arguments[1] === undefined ? null : arguments[1];
-
+	    function TuiText(node, style) {
 	        _classCallCheck(this, TuiText);
 
 	        if (node.nodeType !== 3) {
@@ -588,7 +628,7 @@ var htmlTui =
 
 	        this.content = node.textContent;
 
-	        this.style = style || node.parentNode.ownerDocument.defaultView.getComputedStyle(node.parentNode);
+	        this.style = style;
 	    }
 
 	    _createClass(TuiText, {
@@ -956,124 +996,156 @@ var htmlTui =
 
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	/**
-	 *
-	 * @param {{x: string, y: string, top: string, left: string, bottom: string, right: string}} options
-	 * @param {object} scheme
-	 * @returns {string}
-	 * @private
-	 */
-	exports.lookupCharacter = lookupCharacter;
-
-	/**
-	 *
-	 * @param {{x: string, y: string}} options
-	 * @param {CssStyle} style
-	 * @returns {{color: string, backgroundColor: string}}
-	 * @private
-	 */
-	exports.lookupCharacterStyle = lookupCharacterStyle;
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
 	var _utils = __webpack_require__(5);
 
 	var mergeBoxes = _utils.mergeBoxes;
 	var shiftBox = _utils.shiftBox;
 
-	var borderScheme = __webpack_require__(16).borderScheme;
-
 	var TuiSymbol = _interopRequire(__webpack_require__(7));
 
-	function lookupCharacter(_x, _x2) {
-	    var _again = true;
-
-	    _function: while (_again) {
-	        _again = false;
-	        var options = _x,
-	            scheme = _x2;
-	        propertyName = value = undefined;
-
-	        var propertyName = Object.keys(scheme)[0];
-	        var value = scheme[propertyName];
-
-	        if (typeof value !== "object") {
-	            return value;
-	        }
-
-	        value = value[options[propertyName]];
-
-	        if (typeof value !== "object") {
-	            return value;
-	        }
-
-	        _x = options;
-	        _x2 = value;
-	        _again = true;
-	        continue _function;
-	    }
-	}
-
-	function lookupCharacterStyle(options, style) {
-	    var color = style.color;
-	    var backgroundColor = style.backgroundColor;
-
-	    if (options.x === "min") {
-	        color = style.borderLeftColor;
-	    }
-
-	    if (options.x === "max") {
-	        color = style.borderRightColor;
-	    }
-
-	    if (options.y === "min" && options.x === "mid") {
-	        color = style.borderTopColor;
-	    }
-
-	    if (options.y === "max" && options.x === "mid") {
-	        color = style.borderBottomColor;
-	    }
-
-	    return { color: color, backgroundColor: backgroundColor };
-	}
+	var BACKGROUND_CHARACTER = __webpack_require__(14).BACKGROUND_CHARACTER;
 
 	/**
-	 *
-	 * @param {{x: string, y: string, top: string, left: string, bottom: string, right: string}} options
-	 * @param {CssStyle} elementStyle
-	 * @returns {TuiSymbol}
-	 */
-	function fromPositionAndStyle(options, elementStyle) {
-	    var char = lookupCharacter(options, borderScheme);
-	    var characterStyle = lookupCharacterStyle(options, elementStyle);
-
-	    return new TuiSymbol(char, characterStyle);
-	}
-
-	/**
-	 *
 	 * @param {TuiElement} tuiElement
-	 * @param {number} x
-	 * @param {number} y
-	 * @returns {TuiSymbol}
-	 * @private
+	 * @returns {Array<Array<(TuiSymbol)>>}
 	 */
-	function boxCharacterAt(tuiElement, x, y) {
-	    /* jshint maxcomplexity: 10 */
+	function fillBox(tuiElement) {
 	    var width = tuiElement.boundingBox.width;
 	    var height = tuiElement.boundingBox.height;
 
-	    var position = {
-	        x: x === 0 ? "min" : x === width - 1 ? "max" : "mid",
-	        y: y === 0 ? "min" : y === height - 1 ? "max" : "mid",
-	        top: parseInt(tuiElement.style.borderTopWidth) ? "yes" : "no",
-	        right: parseInt(tuiElement.style.borderRightWidth) ? "yes" : "no",
-	        bottom: parseInt(tuiElement.style.borderBottomWidth) ? "yes" : "no",
-	        left: parseInt(tuiElement.style.borderLeftWidth) ? "yes" : "no"
-	    };
+	    var background = new TuiSymbol(BACKGROUND_CHARACTER, {
+	        color: tuiElement.style.color,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
 
-	    return fromPositionAndStyle(position, tuiElement.style);
+	    var box = new Array(height);
+	    for (var y = 0; y < height; y++) {
+	        box[y] = new Array(width);
+	        for (var x = 0; x < width; x++) {
+	            box[y][x] = background;
+	        }
+	    }
+
+	    return box;
+	}
+
+	/**
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @param {TuiElement} tuiElement
+	 */
+	function fillLeftBorder(box, tuiElement) {
+	    if (!tuiElement.style.borderLeftWidth) {
+	        return;
+	    }
+
+	    var leftBorder = new TuiSymbol("|", {
+	        color: tuiElement.style.borderLeftColor,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
+
+	    var height = tuiElement.boundingBox.height;
+
+	    for (var y = 0; y < height; y++) {
+	        box[y][0] = leftBorder;
+	    }
+	}
+
+	/**
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @param {TuiElement} tuiElement
+	 */
+	function fillRightBorder(box, tuiElement) {
+	    if (!tuiElement.style.borderRightWidth) {
+	        return;
+	    }
+
+	    var rightBorder = new TuiSymbol("|", {
+	        color: tuiElement.style.borderRightColor,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
+
+	    var height = tuiElement.boundingBox.height;
+	    var width = tuiElement.boundingBox.width;
+
+	    for (var y = 0; y < height; y++) {
+	        box[y][width - 1] = rightBorder;
+	    }
+	}
+
+	/**
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @param {TuiElement} tuiElement
+	 */
+	function fillTopBorder(box, tuiElement) {
+	    if (!tuiElement.style.borderTopWidth) {
+	        return;
+	    }
+
+	    var topBorder = new TuiSymbol("-", {
+	        color: tuiElement.style.borderTopColor,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
+
+	    var height = tuiElement.boundingBox.height;
+	    var width = tuiElement.boundingBox.width;
+
+	    for (var x = 1; x < width - 1; x++) {
+	        box[0][x] = topBorder;
+	    }
+
+	    // Top Left corner
+	    if (box[0][0].char === "|") {
+	        box[0][0] = new TuiSymbol("┌", {
+	            color: tuiElement.style.borderTopColor,
+	            backgroundColor: tuiElement.style.backgroundColor
+	        });
+	    }
+
+	    // Top Right corner
+	    if (box[0][width - 1].char === "|") {
+	        box[0][width - 1] = new TuiSymbol("┐", {
+	            color: tuiElement.style.borderTopColor,
+	            backgroundColor: tuiElement.style.backgroundColor
+	        });
+	    }
+	}
+
+	/**
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @param {TuiElement} tuiElement
+	 */
+	function fillBottomBorder(box, tuiElement) {
+	    if (!tuiElement.style.borderBottomWidth) {
+	        return;
+	    }
+
+	    var topBorder = new TuiSymbol("-", {
+	        color: tuiElement.style.borderBottomColor,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
+
+	    var height = tuiElement.boundingBox.height;
+	    var width = tuiElement.boundingBox.width;
+
+	    for (var x = 1; x < width - 1; x++) {
+	        box[height - 1][x] = topBorder;
+	    }
+
+	    // Bottom Left corner
+	    if (box[height - 1][0].char === "|") {
+	        box[height - 1][0] = new TuiSymbol("└", {
+	            color: tuiElement.style.borderTopColor,
+	            backgroundColor: tuiElement.style.backgroundColor
+	        });
+	    }
+
+	    // Bottom Right corner
+	    if (box[height - 1][width - 1].char === "|") {
+	        box[height - 1][width - 1] = new TuiSymbol("┘", {
+	            color: tuiElement.style.borderTopColor,
+	            backgroundColor: tuiElement.style.backgroundColor
+	        });
+	    }
 	}
 
 	/**
@@ -1083,13 +1155,11 @@ var htmlTui =
 	 * @private
 	 */
 	function renderBox(tuiElement) {
-	    var box = [];
-	    for (var y = 0; y < tuiElement.boundingBox.height; y++) {
-	        box.push([]);
-	        for (var x = 0; x < tuiElement.boundingBox.width; x++) {
-	            box[y][x] = boxCharacterAt(tuiElement, x, y);
-	        }
-	    }
+	    var box = fillBox(tuiElement);
+	    fillLeftBorder(box, tuiElement);
+	    fillRightBorder(box, tuiElement);
+	    fillTopBorder(box, tuiElement);
+	    fillBottomBorder(box, tuiElement);
 
 	    return box;
 	}
@@ -1110,8 +1180,9 @@ var htmlTui =
 	 * @returns {Array<Array<(TuiSymbol)>>}
 	 */
 
-	exports["default"] = function (tuiElement) {
-	    var box = shiftBox(renderBox(tuiElement), tuiElement.boundingBox);
+	module.exports = function (tuiElement) {
+	    var box = renderBox(tuiElement);
+	    box = shiftBox(box, tuiElement.boundingBox);
 	    var content = renderContent(tuiElement);
 
 	    return [box].concat(content).reduce(mergeBoxes, []);
@@ -1144,8 +1215,8 @@ var htmlTui =
 	    var style = _ref.style;
 	    var boundingBox = _ref.boundingBox;
 
-	    var leftInputBorder = parseInt(style.borderLeftWidth) + parseInt(style.paddingLeft);
-	    var rightInputBorder = parseInt(style.borderRightWidth) + parseInt(style.paddingRight);
+	    var leftInputBorder = style.borderLeftWidth + style.paddingLeft;
+	    var rightInputBorder = style.borderRightWidth + style.paddingRight;
 
 	    return boundingBox.width - leftInputBorder - rightInputBorder;
 	}
@@ -1168,11 +1239,11 @@ var htmlTui =
 	    var left = boundingBox.left;
 	    var top = boundingBox.top;
 
-	    left += parseInt(style.borderLeftWidth);
-	    left += parseInt(style.paddingLeft);
+	    left += style.borderLeftWidth;
+	    left += style.paddingLeft;
 
-	    top += parseInt(style.borderTopWidth);
-	    top += parseInt(style.paddingTop);
+	    top += style.borderTopWidth;
+	    top += style.paddingTop;
 
 	    return {
 	        left: left,
@@ -1477,152 +1548,6 @@ var htmlTui =
 		exports.calculate = SPECIFICITY.calculate;
 	}
 
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var BACKGROUND_CHARACTER = __webpack_require__(14).BACKGROUND_CHARACTER;
-
-	var borderScheme = {
-	    x: {
-	        min: {
-	            y: {
-	                min: {
-	                    // x─┐
-	                    // │ │
-	                    // └─┘
-	                    left: {
-	                        no: {
-	                            top: {
-	                                no: BACKGROUND_CHARACTER,
-	                                yes: "─"
-	                            }
-	                        },
-	                        yes: {
-	                            top: {
-	                                no: "│",
-	                                yes: "┌"
-	                            }
-	                        }
-	                    }
-	                },
-	                max: {
-	                    // ┌─┐
-	                    // │ │
-	                    // x─┘
-	                    left: {
-	                        no: {
-	                            bottom: {
-	                                no: BACKGROUND_CHARACTER,
-	                                yes: "─"
-	                            }
-	                        },
-	                        yes: {
-	                            bottom: {
-	                                no: "│",
-	                                yes: "└"
-	                            }
-	                        }
-	                    }
-	                },
-	                mid: {
-	                    // ┌─┐
-	                    // x │
-	                    // └─┘
-	                    left: {
-	                        no: BACKGROUND_CHARACTER,
-	                        yes: "│"
-	                    }
-	                }
-	            }
-	        },
-	        mid: {
-	            y: {
-	                min: {
-	                    // ┌x┐
-	                    // │ │
-	                    // └─┘
-	                    top: {
-	                        no: BACKGROUND_CHARACTER,
-	                        yes: "─"
-	                    }
-	                },
-	                // ┌─┐
-	                // │x│
-	                // └─┘
-	                mid: BACKGROUND_CHARACTER,
-	                max: {
-	                    // ┌─┐
-	                    // │ │
-	                    // └x┘
-	                    bottom: {
-	                        no: BACKGROUND_CHARACTER,
-	                        yes: "─"
-	                    }
-	                }
-	            }
-	        },
-	        max: {
-	            y: {
-	                min: {
-	                    // ┌─x
-	                    // │ │
-	                    // └─┘
-	                    right: {
-	                        no: {
-	                            top: {
-	                                no: BACKGROUND_CHARACTER,
-	                                yes: "─"
-	                            }
-	                        },
-	                        yes: {
-	                            top: {
-	                                no: "│",
-	                                yes: "┐"
-	                            }
-	                        }
-	                    }
-	                },
-	                mid: {
-	                    // ┌─┐
-	                    // │ x
-	                    // └─┘
-	                    right: {
-	                        no: BACKGROUND_CHARACTER,
-	                        yes: "│"
-	                    }
-	                },
-	                max: {
-	                    // ┌─┐
-	                    // │ │
-	                    // └─x
-	                    right: {
-	                        no: {
-	                            bottom: {
-	                                no: BACKGROUND_CHARACTER,
-	                                yes: "─"
-	                            }
-	                        },
-	                        yes: {
-	                            bottom: {
-	                                no: "|",
-	                                yes: "┘"
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
-	};
-	exports.borderScheme = borderScheme;
 
 /***/ }
 /******/ ]);
