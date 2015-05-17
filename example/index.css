@@ -58,6 +58,8 @@
 
 .file-list {
     height: 100%;
+    color: #fff;
+    overflow: auto;
 }
 
 .file,
@@ -143,7 +145,7 @@
 }
 
 .controls {
-    margin-top: -1px;
+    margin-top: -2px;
     height: 1px;
 }
 

@@ -8,6 +8,7 @@ tui-dom() {
     letter-spacing: 0.4px;
     z-index: 2;
     visibility: visible;
+    overflow: hidden;
 
     * {
         padding: 0;
@@ -16,6 +17,11 @@ tui-dom() {
         font-size: inherit;
         letter-spacing: inherit;
         font-family: inherit;
+
+        ::-webkit-scrollbar {
+            width: 1px;
+            height: 0;
+        }
     }
 }
 

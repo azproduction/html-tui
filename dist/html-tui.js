@@ -85,6 +85,7 @@ var htmlTui =
 	    function TuiElement(node) {
 	        _classCallCheck(this, TuiElement);
 
+	        /* jshint maxstatements: 15 */
 	        if (node.nodeType !== 1) {
 	            throw new Error("Only element node is supported");
 	        }
@@ -119,6 +120,11 @@ var htmlTui =
 	        this.style = this.getStyle(node);
 
 	        /**
+	         * @type {object}
+	         */
+	        this.scroll = this.getScroll(node);
+
+	        /**
 	         * @type {ClientRect}
 	         */
 	        this.boundingBox = getNormalizedClientRectOf(node.getBoundingClientRect());
@@ -144,17 +150,19 @@ var htmlTui =
 	             */
 
 	            value: function getContentOf(node) {
-	                var _this = this;
+	                var nodes = node.childNodes;
+	                var content = [];
+	                for (var i = 0; i < nodes.length; i++) {
+	                    var childNode = nodes[i];
+	                    if (childNode.nodeType === 1) {
+	                        content.push(new TuiElement(childNode));
+	                    }
+	                    if (childNode.nodeType === 3) {
+	                        content.push(new TuiText(childNode, this.style));
+	                    }
+	                }
 
-	                return Array.prototype.slice.call(node.childNodes).reduce(function (content, node) {
-	                    if (node.nodeType === 1) {
-	                        content.push(new TuiElement(node));
-	                    }
-	                    if (node.nodeType === 3) {
-	                        content.push(new TuiText(node, _this.style));
-	                    }
-	                    return content;
-	                }, []);
+	                return content;
 	            }
 	        },
 	        getProperties: {
@@ -195,7 +203,19 @@ var htmlTui =
 	                    paddingLeft: parseInt(computedStyle.paddingLeft),
 	                    paddingRight: parseInt(computedStyle.paddingRight),
 	                    paddingTop: parseInt(computedStyle.paddingTop),
-	                    paddingBottom: parseInt(computedStyle.paddingBottom)
+	                    paddingBottom: parseInt(computedStyle.paddingBottom),
+
+	                    overflow: computedStyle.overflow
+	                };
+	            }
+	        },
+	        getScroll: {
+	            value: function getScroll(node) {
+	                return {
+	                    scrollHeight: node.scrollHeight,
+	                    scrollWidth: node.scrollWidth,
+	                    scrollLeft: node.scrollLeft,
+	                    scrollTop: node.scrollTop
 	                };
 	            }
 	        },
@@ -480,45 +500,13 @@ var htmlTui =
 	    };
 	}
 
-	//export function getNormalizedClientRectOf(boundingBox) {
-	//    var top = Math.round(boundingBox.top);
-	//    var right = Math.round(boundingBox.right);
-	//    var bottom = Math.round(boundingBox.bottom);
-	//    var left = Math.round(boundingBox.left);
-	//
-	//    return {
-	//        bottom,
-	//        left,
-	//        right,
-	//        top,
-	//
-	//        width: right - left,
-	//        height: bottom - top
-	//    };
-	//}
-
-	/**
-	 * @param {number} length
-	 * @param {*} content
-	 * @returns {Array}
-	 */
-	function fillArray(length, content) {
-	    var array = new Array(length);
-
-	    for (var i = 0; i < array.length; i++) {
-	        array[i] = content;
-	    }
-
-	    return array;
-	}
 	function shiftBox(box, boundingBox) {
-	    var width = boundingBox.width;
 	    var left = boundingBox.left;
 	    var top = boundingBox.top;
-	    var paddingLeft = fillArray(left, emptySymbol);
-	    var paddingTop = fillArray(left + width, emptySymbol);
+	    var paddingLeft = new Array(left);
+	    var paddingTop = new Array(0);
 
-	    box.forEach(function (row) {
+	    box.forEach(function shiftRow(row) {
 	        row.unshift.apply(row, paddingLeft);
 	    });
 
@@ -532,11 +520,24 @@ var htmlTui =
 
 	/**
 	 *
-	 * @param {(TuiSymbol)} symbolA
-	 * @param {(TuiSymbol)} symbolB
-	 * @returns {(TuiSymbol)}
+	 * @param {TuiSymbol|undefined} symbolA
+	 * @param {TuiSymbol|undefined} symbolB
+	 * @returns {TuiSymbol}
 	 */
 	function mergeSymbols(symbolA, symbolB) {
+	    /* jshint maxcomplexity: 7 */
+	    if (typeof symbolA === "undefined" && typeof symbolB === "undefined") {
+	        return emptySymbol;
+	    }
+
+	    if (typeof symbolA === "undefined") {
+	        return symbolB;
+	    }
+
+	    if (typeof symbolB === "undefined") {
+	        return symbolA;
+	    }
+
 	    var backgroundColor = isTransparentColor(symbolB.style.backgroundColor) ? symbolA.style.backgroundColor : symbolB.style.backgroundColor;
 
 	    var color = symbolB.char === BACKGROUND_CHARACTER ? symbolA.style.color : symbolB.style.color;
@@ -547,29 +548,37 @@ var htmlTui =
 
 	/**
 	 *
-	 * @param {Array<Array<(TuiSymbol)>>} layerA
-	 * @param {Array<Array<(TuiSymbol)>>} layerB
-	 * @returns {{maxWidth: number, maxHeight: number}}
+	 * @param {Array<(TuiSymbol|undefined)>} rowA
+	 * @param {Array<(TuiSymbol|undefined)>} rowB
+	 * @returns {Array<(TuiSymbol)>}
 	 */
-	function getMaxDimensions(layerA, layerB) {
-	    var maxWidth = Math.max(layerA[0] && layerA[0].length || 0, layerB[0] && layerB[0].length || 0);
-	    var maxHeight = Math.max(layerA.length, layerB.length);
+	function mergeBoxRow(rowA, rowB) {
+	    if (typeof rowA === "undefined" && typeof rowB === "undefined") {
+	        return [];
+	    }
 
-	    return { maxWidth: maxWidth, maxHeight: maxHeight };
+	    if (typeof rowA === "undefined") {
+	        return rowB;
+	    }
+
+	    if (typeof rowB === "undefined") {
+	        return rowA;
+	    }
+
+	    var maxWidth = Math.max(rowA.length, rowB.length);
+	    var row = new Array(maxWidth);
+	    for (var x = 0; x < maxWidth; x++) {
+	        row[x] = mergeSymbols(rowA[x], rowB[x]);
+	    }
+
+	    return row;
 	}
 	function mergeBoxes(layerA, layerB) {
-	    var box = [];
-
-	    var _getMaxDimensions = getMaxDimensions(layerA, layerB);
-
-	    var maxWidth = _getMaxDimensions.maxWidth;
-	    var maxHeight = _getMaxDimensions.maxHeight;
+	    var maxHeight = Math.max(layerA.length, layerB.length);
+	    var box = new Array(maxHeight);
 
 	    for (var y = 0; y < maxHeight; y++) {
-	        box.push([]);
-	        for (var x = 0; x < maxWidth; x++) {
-	            box[y][x] = mergeSymbols(layerA[y] && layerA[y][x] || emptySymbol, layerB[y] && layerB[y][x] || emptySymbol);
-	        }
+	        box[y] = mergeBoxRow(layerA[y], layerB[y]);
 	    }
 
 	    return box;
@@ -1149,6 +1158,100 @@ var htmlTui =
 	}
 
 	/**
+	 * @param {TuiElement} tuiElement
+	 * @returns {boolean}
+	 */
+	function hasHorizontalScrollBars(tuiElement) {
+	    var overflow = tuiElement.style.overflow;
+
+	    if (overflow === "visible" || overflow === "hidden") {
+	        return false;
+	    }
+
+	    return tuiElement.scroll.scrollWidth > tuiElement.boundingBox.width;
+	}
+
+	/**
+	 * @param {TuiElement} tuiElement
+	 * @returns {boolean}
+	 */
+	function hasVerticalScrollBars(tuiElement) {
+	    var overflow = tuiElement.style.overflow;
+
+	    if (overflow === "visible" || overflow === "hidden") {
+	        return false;
+	    }
+
+	    return tuiElement.scroll.scrollHeight > tuiElement.boundingBox.height;
+	}
+
+	/**
+	 * @param {Number} borderSize
+	 * @returns {Number}
+	 */
+	function getTuiBorderSize(borderSize) {
+	    if (borderSize > 0) {
+	        return 1;
+	    }
+
+	    return 0;
+	}
+
+	/**
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @param {TuiElement} tuiElement
+	 */
+	function renderVerticalScrollBar(box, tuiElement) {
+	    /* jshint maxstatements: 20, maxcomplexity: 7 */
+	    if (!hasVerticalScrollBars(tuiElement)) {
+	        return;
+	    }
+
+	    var borderRightWidth = getTuiBorderSize(tuiElement.style.borderRightWidth);
+	    var borderBottomWidth = getTuiBorderSize(tuiElement.style.borderBottomWidth);
+	    var borderTopWidth = getTuiBorderSize(tuiElement.style.borderTopWidth);
+	    var height = tuiElement.boundingBox.height;
+	    var availableScrollHeight = height - borderBottomWidth - borderTopWidth;
+	    var scrollHeight = tuiElement.scroll.scrollHeight;
+	    var scrollTop = tuiElement.scroll.scrollTop;
+
+	    var trackHeight = Math.max(Math.floor(height / scrollHeight * availableScrollHeight), 1);
+	    var trackTop = Math.floor(scrollTop / scrollHeight * availableScrollHeight);
+	    var trackBottom = trackTop + trackHeight;
+
+	    var scrollBarBackground = new TuiSymbol("¦", {
+	        color: tuiElement.style.color,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
+
+	    var scrollBarTrack = new TuiSymbol("║", {
+	        color: tuiElement.style.color,
+	        backgroundColor: tuiElement.style.backgroundColor
+	    });
+
+	    // Fill and Track
+	    for (var y = borderTopWidth; y < box.length - borderBottomWidth; y++) {
+	        var row = box[y];
+	        var scrollBarPosition = row.length - borderRightWidth - 1;
+	        if (y >= trackTop && y <= trackBottom) {
+	            row[scrollBarPosition] = scrollBarTrack;
+	        } else {
+	            row[scrollBarPosition] = scrollBarBackground;
+	        }
+	    }
+	}
+
+	/**
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @param {TuiElement} tuiElement
+	 */
+	function renderHorizontalScrollBar(box, tuiElement) {
+	    if (!hasHorizontalScrollBars(tuiElement)) {
+	        return;
+	    }
+	}
+
+	/**
 	 *
 	 * @param {TuiElement} tuiElement
 	 * @returns {Array<Array<(TuiSymbol)>>}
@@ -1160,8 +1263,65 @@ var htmlTui =
 	    fillRightBorder(box, tuiElement);
 	    fillTopBorder(box, tuiElement);
 	    fillBottomBorder(box, tuiElement);
+	    renderVerticalScrollBar(box, tuiElement);
 
 	    return box;
+	}
+
+	/**
+	 *
+	 * @param {Number} bottom
+	 * @param {Number} right
+	 * @param {Number} top
+	 * @param {Number} left
+	 * @returns {Function}
+	 */
+	function cropBoxUsing(_ref) {
+	    var bottom = _ref.bottom;
+	    var right = _ref.right;
+	    var top = _ref.top;
+	    var left = _ref.left;
+
+	    /**
+	     * @param {Array<Array<(TuiSymbol)>>} box
+	     * @return {Array<Array<(TuiSymbol)>>}
+	     */
+	    return function cropBox(box) {
+	        if (bottom <= 0 || right <= 0) {
+	            return [[]];
+	        }
+	        var croppedBox = new Array(bottom);
+
+	        for (var y = top; y < box.length && y < bottom; y++) {
+	            var row = box[y];
+	            croppedBox[y] = new Array(right);
+
+	            for (var x = left; x < row.length && x < right; x++) {
+	                croppedBox[y][x] = row[x];
+	            }
+	        }
+
+	        return croppedBox;
+	    };
+	}
+
+	/**
+	 * @param {TuiElement} tuiElement
+	 * @returns {Function} crop function
+	 */
+	function cropBoxByTuiElement(tuiElement) {
+	    if (tuiElement.style.overflow === "visible") {
+	        return function (box) {
+	            return box;
+	        };
+	    }
+
+	    var bottom = tuiElement.boundingBox.bottom - getTuiBorderSize(tuiElement.style.borderBottomWidth);
+	    var right = tuiElement.boundingBox.right - getTuiBorderSize(tuiElement.style.borderRightWidth);
+	    var top = tuiElement.boundingBox.top + getTuiBorderSize(tuiElement.style.borderTopWidth);
+	    var left = tuiElement.boundingBox.left + getTuiBorderSize(tuiElement.style.borderLeftWidth);
+
+	    return cropBoxUsing({ bottom: bottom, right: right, top: top, left: left });
 	}
 
 	/**
@@ -1172,7 +1332,7 @@ var htmlTui =
 	function renderContent(tuiElement) {
 	    return tuiElement.content.map(function (item) {
 	        return item.toArray();
-	    });
+	    }).map(cropBoxByTuiElement(tuiElement));
 	}
 
 	/**
