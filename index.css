@@ -1,11 +1,11 @@
 .tui-dom {
-    font-family: 'Courier New', monospace;
+    font-family: 'Courier', 'Courier New', monospace;
     position: absolute;
     left: 0;
     top: 0;
     font-size: 1px;
+    letter-spacing: 0.39990234375px;
     line-height: 1px;
-    letter-spacing: 0.4px;
     visibility: visible;
     z-index: -1;
     overflow: hidden;
@@ -26,7 +26,7 @@
 }
 
 .tui-cli {
-    font-family: 'Courier New', monospace;
+    font-family: 'Courier', 'Courier New', monospace;
     position: absolute;
     left: 0;
     top: 0;
