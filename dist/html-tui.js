@@ -52,7 +52,7 @@ var htmlTui =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.TuiElement = _interopRequire(__webpack_require__(8));
+	exports.TuiElement = _interopRequire(__webpack_require__(1));
 	exports.render = _interopRequire(__webpack_require__(3));
 	exports.compressBox = _interopRequire(__webpack_require__(2));
 	exports.addSerializer = __webpack_require__(4).addSerializer;
@@ -61,88 +61,198 @@ var htmlTui =
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	
-
-	/**
-	 *
-	 * @param {Array<Array<(TuiSymbol)>>} box
-	 * @returns {string}
-	 */
 	"use strict";
 
-	exports.ansi = ansi;
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var ansiColors = {
-	    // # Styles
-	    bold: ["\u001b[1m", "\u001b[22m"],
-	    italic: ["\u001b[3m", "\u001b[23m"],
-	    underline: ["\u001b[4m", "\u001b[24m"],
-	    inverse: ["\u001b[7m", "\u001b[27m"],
-	    strikethrough: ["\u001b[9m", "\u001b[29m"],
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	    // # Text colors
-	    // ## Grayscale
-	    "rgb(255, 255, 255)": ["\u001b[37m", "\u001b[39m"],
-	    "rgb(128, 128, 128)": ["\u001b[90m", "\u001b[39m"],
-	    "rgb(0, 0, 0)": ["\u001b[30m", "\u001b[39m"],
-	    // ## Colors
-	    "rgb(0, 0, 255)": ["\u001b[34m", "\u001b[39m"],
-	    "rgb(0, 255, 255)": ["\u001b[36m", "\u001b[39m"],
-	    "rgb(0, 128, 0)": ["\u001b[32m", "\u001b[39m"],
-	    "rgb(255, 0, 255)": ["\u001b[35m", "\u001b[39m"],
-	    "rgb(255, 0, 0)": ["\u001b[31m", "\u001b[39m"],
-	    "rgb(255, 255, 0)": ["\u001b[33m", "\u001b[39m"],
-	    "rgba(0, 0, 0, 0)": ["", ""],
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	    // # Background colors
-	    // ## Grayscale
-	    "rgb(255, 255, 255)BG": ["\u001b[47m", "\u001b[49m"],
-	    "rgb(0, 0, 0)BG": ["\u001b[49;5;8m", "\u001b[49m"],
-	    "rgb(128, 128, 128)BG": ["\u001b[40m", "\u001b[49m"],
-	    // ## Colors
-	    "rgb(0, 0, 255)BG": ["\u001b[44m", "\u001b[49m"],
-	    "rgb(0, 255, 255)BG": ["\u001b[46m", "\u001b[49m"],
-	    "rgb(0, 128, 0)BG": ["\u001b[42m", "\u001b[49m"],
-	    "rgb(255, 0, 255)BG": ["\u001b[45m", "\u001b[49m"],
-	    "rgb(255, 0, 0)BG": ["\u001b[41m", "\u001b[49m"],
-	    "rgb(255, 255, 0)BG": ["\u001b[43m", "\u001b[49m"],
-	    "rgba(0, 0, 0, 0)BG": ["", ""]
-	};
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-	/**
-	 *
-	 * @param {string} string
-	 * @param {string[]} style
-	 * @returns {*}
-	 */
-	function wrapString(string, style) {
-	    var pair = ansiColors[style];
+	var getNormalizedClientRectOf = __webpack_require__(5).getNormalizedClientRectOf;
 
-	    if (!pair) {
-	        return string;
+	var selectSerializerFor = __webpack_require__(4).selectSerializerFor;
+
+	var TuiText = _interopRequire(__webpack_require__(6));
+
+	var TuiElement = (function () {
+	    /**
+	     *
+	     * @param {Node} node
+	     * @param {Object} [options={}]
+	     * @param {Number[]} [options.scale]
+	     * @constructor
+	     */
+
+	    function TuiElement(node, options) {
+	        _classCallCheck(this, TuiElement);
+
+	        /* jshint maxstatements: 15 */
+	        if (node.nodeType !== 1) {
+	            throw new Error("Only element node is supported");
+	        }
+
+	        if (!node.ownerDocument && !node.ownerDocument.defaultView) {
+	            throw new Error("Can not serialize detached node");
+	        }
+
+	        this.options = options || {};
+
+	        /**
+	         * @type {string}
+	         */
+	        this.tagName = node.tagName.toLowerCase();
+
+	        /**
+	         * @type {{name: string, value: string}[]}
+	         */
+	        this.attributes = Array.prototype.slice.call(node.attributes);
+
+	        /**
+	         * @type {object}
+	         */
+	        this.properties = this.getProperties(node);
+
+	        /**
+	         * @type {boolean}
+	         */
+	        this.isActiveEment = node.ownerDocument.activeElement === node;
+
+	        /**
+	         * @type {CssStyle}
+	         */
+	        this.style = this.getStyle(node);
+
+	        /**
+	         * @type {object}
+	         */
+	        this.scroll = this.getScroll(node);
+
+	        /**
+	         * @type {ClientRect}
+	         */
+	        this.boundingBox = getNormalizedClientRectOf(node.getBoundingClientRect(), options);
+
+	        /**
+	         * @type {(TuiElement|TuiText)[]}
+	         */
+	        this.content = this.getContentOf(node);
+
+	        // TODO currently serializer is bound to HTMLElement
+	        /**
+	         * @type {function}
+	         */
+	        this.serializeNode = selectSerializerFor(node);
 	    }
 
-	    return pair[0] + string + pair[1];
-	}
+	    _createClass(TuiElement, {
+	        getContentOf: {
 
-	/**
-	 *
-	 * @param {TuiSymbol} symbol
-	 * @returns {string[]}
-	 */
-	function ansiSymbol(symbol) {
-	    var character = wrapString(symbol.char, symbol.style.color);
-	    character = wrapString(character, symbol.style.backgroundColor + "BG");
+	            /**
+	             * @param {Node} node
+	             * @returns {(TuiElement|TuiText)[]}
+	             */
 
-	    return character;
-	}
-	function ansi(box) {
-	    return box.map(function (row) {
-	        return row.map(ansiSymbol).join("");
-	    }).join("\n");
-	}
+	            value: function getContentOf(node) {
+	                var nodes = node.childNodes;
+	                var content = [];
+	                for (var i = 0; i < nodes.length; i++) {
+	                    var childNode = nodes[i];
+	                    if (childNode.nodeType === 1) {
+	                        content.push(new TuiElement(childNode, this.options));
+	                    }
+	                    if (childNode.nodeType === 3) {
+	                        content.push(new TuiText(childNode, this.style, this.options));
+	                    }
+	                }
+
+	                return content;
+	            }
+	        },
+	        getProperties: {
+
+	            /**
+	             *
+	             * @param node
+	             */
+
+	            value: function getProperties(node) {
+	                return {
+	                    value: node.value,
+	                    checked: node.checked,
+	                    selectionStart: node.selectionStart,
+	                    selectionEnd: node.selectionEnd
+	                };
+	            }
+	        },
+	        getStyle: {
+	            value: function getStyle(node) {
+	                var computedStyle = node.ownerDocument.defaultView.getComputedStyle(node);
+
+	                // Support only subset of CSS
+	                return {
+	                    color: computedStyle.color,
+	                    backgroundColor: computedStyle.backgroundColor,
+
+	                    borderLeftColor: computedStyle.borderLeftColor,
+	                    borderRightColor: computedStyle.borderRightColor,
+	                    borderTopColor: computedStyle.borderTopColor,
+	                    borderBottomColor: computedStyle.borderBottomColor,
+
+	                    borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
+	                    borderRightWidth: parseInt(computedStyle.borderRightWidth),
+	                    borderTopWidth: parseInt(computedStyle.borderTopWidth),
+	                    borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
+
+	                    paddingLeft: parseInt(computedStyle.paddingLeft),
+	                    paddingRight: parseInt(computedStyle.paddingRight),
+	                    paddingTop: parseInt(computedStyle.paddingTop),
+	                    paddingBottom: parseInt(computedStyle.paddingBottom),
+
+	                    overflow: computedStyle.overflow
+	                };
+	            }
+	        },
+	        getScroll: {
+	            value: function getScroll(node) {
+	                return {
+	                    scrollHeight: node.scrollHeight,
+	                    scrollWidth: node.scrollWidth,
+	                    scrollLeft: node.scrollLeft,
+	                    scrollTop: node.scrollTop
+	                };
+	            }
+	        },
+	        toArray: {
+
+	            /**
+	             *
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function toArray() {
+	                return this.serializeNode.call(null, this);
+	            }
+	        },
+	        toString: {
+
+	            /**
+	             *
+	             * @returns {string}
+	             */
+
+	            value: function toString() {
+	                return this.toArray().map(function (row) {
+	                    return row.join("");
+	                }).join("\n");
+	            }
+	        }
+	    });
+
+	    return TuiElement;
+	})();
+
+	module.exports = TuiElement;
 
 /***/ },
 /* 2 */
@@ -161,7 +271,7 @@ var htmlTui =
 	 */
 	module.exports = compressBox;
 
-	var _tuiSymbol = __webpack_require__(5);
+	var _tuiSymbol = __webpack_require__(7);
 
 	var TuiSymbol = _interopRequire(_tuiSymbol);
 
@@ -220,7 +330,7 @@ var htmlTui =
 
 	"use strict";
 
-	var ansi = __webpack_require__(1).ansi;
+	var ansi = __webpack_require__(8).ansi;
 
 	var chrome = __webpack_require__(9).chrome;
 
@@ -342,99 +452,15 @@ var htmlTui =
 
 	"use strict";
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
-	/**
-	 *
-	 * @param {(TuiSymbol)} symbolA
-	 * @param {(TuiSymbol)} symbolB
-	 */
-	exports.isSameStyleSymbol = isSameStyleSymbol;
-
-	/**
-	 *
-	 * @param {string} color
-	 * @returns {boolean}
-	 */
-	exports.isTransparentColor = isTransparentColor;
-
-	/**
-	 *
-	 * @param {string} char
-	 * @param {CssStyle} style
-	 * @returns {boolean}
-	 */
-	exports.isTransparentCharacter = isTransparentCharacter;
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var BACKGROUND_CHARACTER = __webpack_require__(15).BACKGROUND_CHARACTER;
-
-	function isSameStyleSymbol(symbolA, symbolB) {
-	    return symbolA.style.color === symbolB.style.color && symbolA.style.backgroundColor === symbolB.style.backgroundColor;
-	}
-
-	function isTransparentColor(color) {
-	    return color === "rgba(0, 0, 0, 0)" || color === "transparent";
-	}
-
-	function isTransparentCharacter(char, style) {
-	    return char === BACKGROUND_CHARACTER && isTransparentColor(style.backgroundColor);
-	}
-
-	var TuiSymbol = (function () {
-	    /**
-	     *
-	     * @param {string} char
-	     * @param {{color: string, backgroundColor: string}} style
-	     */
-
-	    function TuiSymbol(char, style) {
-	        _classCallCheck(this, TuiSymbol);
-
-	        if (isTransparentCharacter(char, style)) {
-	            char = BACKGROUND_CHARACTER;
-	        }
-
-	        this.char = char;
-	        this.style = style;
-	    }
-
-	    _createClass(TuiSymbol, {
-	        toString: {
-
-	            /**
-	             *
-	             * @returns {string}
-	             */
-
-	            value: function toString() {
-	                return this.char;
-	            }
-	        }
-	    });
-
-	    return TuiSymbol;
-	})();
-
-	exports["default"] = TuiSymbol;
-	var emptySymbol = new TuiSymbol(BACKGROUND_CHARACTER, {
-	    color: "rgba(0, 0, 0, 0)",
-	    backgroundColor: "rgba(0, 0, 0, 0)"
-	});
-	exports.emptySymbol = emptySymbol;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
+	/**
+	 * @param {ClientRect} boundingBox
+	 * @param {Number[]} scale
+	 * @returns {{bottom: number, height: number, left: number, right: number, top: number, width: number}}
+	 */
 	exports.getNormalizedClientRectOf = getNormalizedClientRectOf;
 
 	/**
@@ -465,7 +491,7 @@ var htmlTui =
 	    value: true
 	});
 
-	var _tuiSymbol = __webpack_require__(5);
+	var _tuiSymbol = __webpack_require__(7);
 
 	var emptySymbol = _tuiSymbol.emptySymbol;
 	var isTransparentColor = _tuiSymbol.isTransparentColor;
@@ -474,14 +500,26 @@ var htmlTui =
 
 	var BACKGROUND_CHARACTER = __webpack_require__(15).BACKGROUND_CHARACTER;
 
-	function getNormalizedClientRectOf(boundingBox) {
+	function getNormalizedClientRectOf(boundingBox, _ref) {
+	    var scale = _ref.scale;
+
+	    var _ref2 = scale || [];
+
+	    var _ref22 = _slicedToArray(_ref2, 2);
+
+	    var scaleX = _ref22[0];
+	    var scaleY = _ref22[1];
+
+	    scaleX = scaleX || 1;
+	    scaleY = scaleY || 1;
+
 	    return {
-	        bottom: Math.round(boundingBox.bottom),
-	        height: Math.round(boundingBox.height),
-	        left: Math.round(boundingBox.left),
-	        right: Math.round(boundingBox.right),
-	        top: Math.round(boundingBox.top),
-	        width: Math.round(boundingBox.width)
+	        bottom: Math.round(boundingBox.bottom / scaleY),
+	        height: Math.round(boundingBox.height / scaleY),
+	        left: Math.round(boundingBox.left / scaleX),
+	        right: Math.round(boundingBox.right / scaleX),
+	        top: Math.round(boundingBox.top / scaleY),
+	        width: Math.round(boundingBox.width / scaleX)
 	    };
 	}
 
@@ -578,7 +616,7 @@ var htmlTui =
 	}
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -587,7 +625,7 @@ var htmlTui =
 
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-	var _utils = __webpack_require__(6);
+	var _utils = __webpack_require__(5);
 
 	var getNormalizedClientRectOf = _utils.getNormalizedClientRectOf;
 	var shiftBox = _utils.shiftBox;
@@ -598,10 +636,12 @@ var htmlTui =
 	     *
 	     * @param {Node} node
 	     * @param {CssStyle} style
+	     * @param {Object} [options={}]
+	     * @param {Number[]} [options.scale]
 	     * @constructor
 	     */
 
-	    function TuiText(node, style) {
+	    function TuiText(node, style, options) {
 	        _classCallCheck(this, TuiText);
 
 	        if (node.nodeType !== 3) {
@@ -615,10 +655,12 @@ var htmlTui =
 	        var range = node.ownerDocument.createRange();
 	        range.selectNodeContents(node);
 
+	        this.options = options || {};
+
 	        /**
 	         * @type {ClientRect}
 	         */
-	        this.boundingBox = getNormalizedClientRectOf(range.getBoundingClientRect());
+	        this.boundingBox = getNormalizedClientRectOf(range.getBoundingClientRect(), options);
 
 	        this.content = node.textContent;
 
@@ -676,178 +718,73 @@ var htmlTui =
 	module.exports = TuiText;
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
-	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-	var getNormalizedClientRectOf = __webpack_require__(6).getNormalizedClientRectOf;
+	/**
+	 *
+	 * @param {(TuiSymbol)} symbolA
+	 * @param {(TuiSymbol)} symbolB
+	 */
+	exports.isSameStyleSymbol = isSameStyleSymbol;
 
-	var selectSerializerFor = __webpack_require__(4).selectSerializerFor;
+	/**
+	 *
+	 * @param {string} color
+	 * @returns {boolean}
+	 */
+	exports.isTransparentColor = isTransparentColor;
 
-	var TuiText = _interopRequire(__webpack_require__(7));
+	/**
+	 *
+	 * @param {string} char
+	 * @param {CssStyle} style
+	 * @returns {boolean}
+	 */
+	exports.isTransparentCharacter = isTransparentCharacter;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
 
-	var TuiElement = (function () {
+	var BACKGROUND_CHARACTER = __webpack_require__(15).BACKGROUND_CHARACTER;
+
+	function isSameStyleSymbol(symbolA, symbolB) {
+	    return symbolA.style.color === symbolB.style.color && symbolA.style.backgroundColor === symbolB.style.backgroundColor;
+	}
+
+	function isTransparentColor(color) {
+	    return color === "rgba(0, 0, 0, 0)" || color === "transparent";
+	}
+
+	function isTransparentCharacter(char, style) {
+	    return char === BACKGROUND_CHARACTER && isTransparentColor(style.backgroundColor);
+	}
+
+	var TuiSymbol = (function () {
 	    /**
 	     *
-	     * @param {Node} node
-	     * @constructor
+	     * @param {string} char
+	     * @param {{color: string, backgroundColor: string}} style
 	     */
 
-	    function TuiElement(node) {
-	        _classCallCheck(this, TuiElement);
+	    function TuiSymbol(char, style) {
+	        _classCallCheck(this, TuiSymbol);
 
-	        /* jshint maxstatements: 15 */
-	        if (node.nodeType !== 1) {
-	            throw new Error("Only element node is supported");
+	        if (isTransparentCharacter(char, style)) {
+	            char = BACKGROUND_CHARACTER;
 	        }
 
-	        if (!node.ownerDocument && !node.ownerDocument.defaultView) {
-	            throw new Error("Can not serialize detached node");
-	        }
-
-	        /**
-	         * @type {string}
-	         */
-	        this.tagName = node.tagName.toLowerCase();
-
-	        /**
-	         * @type {{name: string, value: string}[]}
-	         */
-	        this.attributes = Array.prototype.slice.call(node.attributes);
-
-	        /**
-	         * @type {object}
-	         */
-	        this.properties = this.getProperties(node);
-
-	        /**
-	         * @type {boolean}
-	         */
-	        this.isActiveEment = node.ownerDocument.activeElement === node;
-
-	        /**
-	         * @type {CssStyle}
-	         */
-	        this.style = this.getStyle(node);
-
-	        /**
-	         * @type {object}
-	         */
-	        this.scroll = this.getScroll(node);
-
-	        /**
-	         * @type {ClientRect}
-	         */
-	        this.boundingBox = getNormalizedClientRectOf(node.getBoundingClientRect());
-
-	        /**
-	         * @type {(TuiElement|TuiText)[]}
-	         */
-	        this.content = this.getContentOf(node);
-
-	        // TODO currently serializer is bound to HTMLElement
-	        /**
-	         * @type {function}
-	         */
-	        this.serializeNode = selectSerializerFor(node);
+	        this.char = char;
+	        this.style = style;
 	    }
 
-	    _createClass(TuiElement, {
-	        getContentOf: {
-
-	            /**
-	             * @param {Node} node
-	             * @returns {(TuiElement|TuiText)[]}
-	             */
-
-	            value: function getContentOf(node) {
-	                var nodes = node.childNodes;
-	                var content = [];
-	                for (var i = 0; i < nodes.length; i++) {
-	                    var childNode = nodes[i];
-	                    if (childNode.nodeType === 1) {
-	                        content.push(new TuiElement(childNode));
-	                    }
-	                    if (childNode.nodeType === 3) {
-	                        content.push(new TuiText(childNode, this.style));
-	                    }
-	                }
-
-	                return content;
-	            }
-	        },
-	        getProperties: {
-
-	            /**
-	             *
-	             * @param node
-	             */
-
-	            value: function getProperties(node) {
-	                return {
-	                    value: node.value,
-	                    checked: node.checked,
-	                    selectionStart: node.selectionStart,
-	                    selectionEnd: node.selectionEnd
-	                };
-	            }
-	        },
-	        getStyle: {
-	            value: function getStyle(node) {
-	                var computedStyle = node.ownerDocument.defaultView.getComputedStyle(node);
-
-	                // Support only subset of CSS
-	                return {
-	                    color: computedStyle.color,
-	                    backgroundColor: computedStyle.backgroundColor,
-
-	                    borderLeftColor: computedStyle.borderLeftColor,
-	                    borderRightColor: computedStyle.borderRightColor,
-	                    borderTopColor: computedStyle.borderTopColor,
-	                    borderBottomColor: computedStyle.borderBottomColor,
-
-	                    borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
-	                    borderRightWidth: parseInt(computedStyle.borderRightWidth),
-	                    borderTopWidth: parseInt(computedStyle.borderTopWidth),
-	                    borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
-
-	                    paddingLeft: parseInt(computedStyle.paddingLeft),
-	                    paddingRight: parseInt(computedStyle.paddingRight),
-	                    paddingTop: parseInt(computedStyle.paddingTop),
-	                    paddingBottom: parseInt(computedStyle.paddingBottom),
-
-	                    overflow: computedStyle.overflow
-	                };
-	            }
-	        },
-	        getScroll: {
-	            value: function getScroll(node) {
-	                return {
-	                    scrollHeight: node.scrollHeight,
-	                    scrollWidth: node.scrollWidth,
-	                    scrollLeft: node.scrollLeft,
-	                    scrollTop: node.scrollTop
-	                };
-	            }
-	        },
-	        toArray: {
-
-	            /**
-	             *
-	             * @returns {Array<Array<(TuiSymbol)>>}
-	             */
-
-	            value: function toArray() {
-	                return this.serializeNode.call(null, this);
-	            }
-	        },
+	    _createClass(TuiSymbol, {
 	        toString: {
 
 	            /**
@@ -856,17 +793,105 @@ var htmlTui =
 	             */
 
 	            value: function toString() {
-	                return this.toArray().map(function (row) {
-	                    return row.join("");
-	                }).join("\n");
+	                return this.char;
 	            }
 	        }
 	    });
 
-	    return TuiElement;
+	    return TuiSymbol;
 	})();
 
-	module.exports = TuiElement;
+	exports["default"] = TuiSymbol;
+	var emptySymbol = new TuiSymbol(BACKGROUND_CHARACTER, {
+	    color: "rgba(0, 0, 0, 0)",
+	    backgroundColor: "rgba(0, 0, 0, 0)"
+	});
+	exports.emptySymbol = emptySymbol;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	/**
+	 *
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @returns {string}
+	 */
+	exports.ansi = ansi;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var ansiColors = {
+	    // # Styles
+	    bold: ["\u001b[1m", "\u001b[22m"],
+	    italic: ["\u001b[3m", "\u001b[23m"],
+	    underline: ["\u001b[4m", "\u001b[24m"],
+	    inverse: ["\u001b[7m", "\u001b[27m"],
+	    strikethrough: ["\u001b[9m", "\u001b[29m"],
+
+	    // # Text colors
+	    // ## Grayscale
+	    "rgb(255, 255, 255)": ["\u001b[37m", "\u001b[39m"],
+	    "rgb(128, 128, 128)": ["\u001b[90m", "\u001b[39m"],
+	    "rgb(0, 0, 0)": ["\u001b[30m", "\u001b[39m"],
+	    // ## Colors
+	    "rgb(0, 0, 255)": ["\u001b[34m", "\u001b[39m"],
+	    "rgb(0, 255, 255)": ["\u001b[36m", "\u001b[39m"],
+	    "rgb(0, 128, 0)": ["\u001b[32m", "\u001b[39m"],
+	    "rgb(255, 0, 255)": ["\u001b[35m", "\u001b[39m"],
+	    "rgb(255, 0, 0)": ["\u001b[31m", "\u001b[39m"],
+	    "rgb(255, 255, 0)": ["\u001b[33m", "\u001b[39m"],
+	    "rgba(0, 0, 0, 0)": ["", ""],
+
+	    // # Background colors
+	    // ## Grayscale
+	    "rgb(255, 255, 255)BG": ["\u001b[47m", "\u001b[49m"],
+	    "rgb(0, 0, 0)BG": ["\u001b[49;5;8m", "\u001b[49m"],
+	    "rgb(128, 128, 128)BG": ["\u001b[40m", "\u001b[49m"],
+	    // ## Colors
+	    "rgb(0, 0, 255)BG": ["\u001b[44m", "\u001b[49m"],
+	    "rgb(0, 255, 255)BG": ["\u001b[46m", "\u001b[49m"],
+	    "rgb(0, 128, 0)BG": ["\u001b[42m", "\u001b[49m"],
+	    "rgb(255, 0, 255)BG": ["\u001b[45m", "\u001b[49m"],
+	    "rgb(255, 0, 0)BG": ["\u001b[41m", "\u001b[49m"],
+	    "rgb(255, 255, 0)BG": ["\u001b[43m", "\u001b[49m"],
+	    "rgba(0, 0, 0, 0)BG": ["", ""]
+	};
+
+	/**
+	 *
+	 * @param {string} string
+	 * @param {string[]} style
+	 * @returns {*}
+	 */
+	function wrapString(string, style) {
+	    var pair = ansiColors[style];
+
+	    if (!pair) {
+	        return string;
+	    }
+
+	    return pair[0] + string + pair[1];
+	}
+
+	/**
+	 *
+	 * @param {TuiSymbol} symbol
+	 * @returns {string[]}
+	 */
+	function ansiSymbol(symbol) {
+	    var character = wrapString(symbol.char, symbol.style.color);
+	    character = wrapString(character, symbol.style.backgroundColor + "BG");
+
+	    return character;
+	}
+	function ansi(box) {
+	    return box.map(function (row) {
+	        return row.map(ansiSymbol).join("");
+	    }).join("\n");
+	}
 
 /***/ },
 /* 9 */
@@ -935,15 +960,13 @@ var htmlTui =
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	
+	"use strict";
 
 	/**
 	 *
 	 * @param {Array<Array<(TuiSymbol)>>} box
 	 * @returns {string}
 	 */
-	"use strict";
-
 	exports.html = html;
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -976,15 +999,13 @@ var htmlTui =
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	
+	"use strict";
 
 	/**
 	 *
 	 * @param {Array<Array<(TuiSymbol)>>} box
 	 * @returns {string}
 	 */
-	"use strict";
-
 	exports.ascii = ascii;
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -1011,12 +1032,12 @@ var htmlTui =
 
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var _utils = __webpack_require__(6);
+	var _utils = __webpack_require__(5);
 
 	var mergeBoxes = _utils.mergeBoxes;
 	var shiftBox = _utils.shiftBox;
 
-	var TuiSymbol = _interopRequire(__webpack_require__(5));
+	var TuiSymbol = _interopRequire(__webpack_require__(7));
 
 	var BACKGROUND_CHARACTER = __webpack_require__(15).BACKGROUND_CHARACTER;
 
@@ -1362,7 +1383,7 @@ var htmlTui =
 
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var _utils = __webpack_require__(6);
+	var _utils = __webpack_require__(5);
 
 	var mergeBoxes = _utils.mergeBoxes;
 	var shiftBox = _utils.shiftBox;
