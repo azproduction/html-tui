@@ -6,7 +6,7 @@
     <script src="assets/index.js"></script>
 </head>
 <body>
-    <div class="tui-dom" style="width: 80px;height: 13px;">
+    <div class="tui-dom" style="width:80px;height:20px;transform:scale(7.8,13);transform-origin:0 0;">
         <div class="mc">
             <ul class="menu">
                 <li class="menu__item"><span class="menu__item-shortcut">L</span>eft</li>
@@ -121,35 +121,19 @@
                         </li>
                     </ul>
                 </div>
-                <div class="panel">
+                <div class="panel panel_file-preview">
                     <div class="panel__caption">~/Documents/html-cli</div>
-                    <ul class="file-list">
-                        <li class="header">
-                            <div class="header__name">Name</div>
-                            <div class="header__size">Size</div>
-                            <div class="header__time">MTime</div>
-                        </li>
-                        <li class="file">
-                            <div class="file__name">/..</div>
-                            <div class="file__size">UP-DIR</div>
-                            <div class="file__time">Oct 11 20:30</div>
-                        </li>
-                        <li class="file">
-                            <div class="file__name">/.idea</div>
-                            <div class="file__size">340</div>
-                            <div class="file__time">Oct 12 00:59</div>
-                        </li>
-                        <li class="file">
-                            <div class="file__name">/lib</div>
-                            <div class="file__size">170</div>
-                            <div class="file__time">Oct 11 23:59</div>
-                        </li>
-                        <li class="file">
-                            <div class="file__name file__name_type_file">Makefile</div>
-                            <div class="file__size">4096</div>
-                            <div class="file__time">Nov 16 22:24</div>
-                        </li>
-                    </ul>
+                    <pre class="file-preview"><span style="color: blue">import</span> React from <span style="color: green">'react'</span>;
+
+<span style="color: blue">var</span> ReactMc = React.createClass({
+  render() {
+    <span style="color: blue">return</span> (
+      &lt;<span style="color: gray">div</span> <span style="color: blue">className=</span><span style="color: green">"mc"</span>/&gt;
+    );
+  }
+};
+
+<span style="color: blue">export</span> <span style="color: blue">default</span> ReactMc;</pre>
                 </div>
             </div>
             <div class="console">

@@ -46,6 +46,10 @@
     margin-bottom: -3px;
 }
 
+.panel_file-preview {
+    background: #000;
+}
+
 .panel__caption {
     display: inline-block;
 
@@ -127,6 +131,10 @@
 .header__size {
     color: yellow;
     text-align: center;
+}
+
+.file-preview {
+    color: #fff;
 }
 
 .console {

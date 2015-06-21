@@ -7,6 +7,7 @@
     "example": "example"
   },
   "dependencies": {
+    "html-entities": "^1.1.2",
     "specificity": "^0.1.4"
   },
   "devDependencies": {

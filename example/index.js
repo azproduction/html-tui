@@ -2,7 +2,9 @@ import './index.css';
 import {TuiElement, render, compressBox} from '..';
 
 requestAnimationFrame(function () {
-    var element = new TuiElement(document.querySelector('.tui-dom'));
+    var element = new TuiElement(document.querySelector('.tui-dom'), {
+        scale: [7.8, 13]
+    });
     var serializedElement = compressBox(element.toArray());
 
     document.querySelector('.tui-cli').innerHTML = render.html(serializedElement);
