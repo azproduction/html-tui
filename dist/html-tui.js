@@ -45,1395 +45,38 @@ var htmlTui =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
-
-	var _libTuiElement = __webpack_require__(11);
-
-	exports.TuiElement = _interopRequire(_libTuiElement);
-
-	var _libRenders = __webpack_require__(2);
-
-	exports.render = _interopRequire(_libRenders);
-
-	var _libSerializers = __webpack_require__(3);
-
-	Object.defineProperty(exports, 'addSerializer', {
-	  enumerable: true,
-	  get: function get() {
-	    return _libSerializers.addSerializer;
-	  }
-	});
+	exports.TuiElement = _interopRequire(__webpack_require__(1));
+	exports.render = _interopRequire(__webpack_require__(2));
+	exports.addSerializer = __webpack_require__(3).addSerializer;
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+	var TuiNode = _interopRequire(__webpack_require__(4));
 
-	var _elementSerializer = __webpack_require__(10);
+	var TuiText = _interopRequire(__webpack_require__(5));
 
-	var _elementSerializer2 = _interopRequireDefault(_elementSerializer);
-
-	var InputSerializer = (function (_ElementSerializer) {
-	    /**
-	     * @param {TuiElement} tuiElement
-	     * @param {Object} options
-	     */
-
-	    function InputSerializer(tuiElement, options) {
-	        _classCallCheck(this, InputSerializer);
-
-	        _get(Object.getPrototypeOf(InputSerializer.prototype), 'constructor', this).call(this, tuiElement, options);
-
-	        this.properties = tuiElement.properties;
-	    }
-
-	    _inherits(InputSerializer, _ElementSerializer);
-
-	    _createClass(InputSerializer, [{
-	        key: 'getInputMaxContentWidth',
-
-	        /**
-	         * Max width of input text in viewport
-	         *
-	         * @returns {Number}
-	         */
-	        value: function getInputMaxContentWidth() {
-	            var leftInputBorder = this.style.borderLeftWidth + this.style.paddingLeft;
-	            var rightInputBorder = this.style.borderRightWidth + this.style.paddingRight;
-
-	            return this.boundingBox.width - leftInputBorder - rightInputBorder;
-	        }
-	    }, {
-	        key: 'getInputTextBoundingBox',
-
-	        /**
-	         * Return bounding box of input's value
-	         *
-	         * @returns {ObjectClientRect}
-	         */
-	        value: function getInputTextBoundingBox() {
-	            var width = Number(this.properties.value.length);
-	            var height = 1;
-	            var left = this.boundingBox.left;
-	            var top = this.boundingBox.top;
-
-	            left += this.style.borderLeftWidth;
-	            left += this.style.paddingLeft;
-
-	            top += this.style.borderTopWidth;
-	            top += this.style.paddingTop;
-
-	            return {
-	                left: left,
-	                top: top,
-	                bottom: top + height,
-	                right: left + width,
-	                height: height,
-	                width: width
-	            };
-	        }
-	    }, {
-	        key: 'getVisibleTextRange',
-
-	        /**
-	         * Returns range which should fit into input
-	         *
-	         * @returns {{start: Number, end: Number}}
-	         */
-	        value: function getVisibleTextRange() {
-	            /* jshint maxstatements: 20 */
-	            var _properties = this.properties;
-	            var value = _properties.value;
-	            var selectionEnd = _properties.selectionEnd;
-
-	            var inputContentWidth = this.getInputMaxContentWidth();
-	            var halfOfInputContentWidth = inputContentWidth / 2;
-	            var start = Math.floor(selectionEnd - halfOfInputContentWidth) + 1;
-	            var end = Math.ceil(selectionEnd + halfOfInputContentWidth) + 1;
-
-	            // Cursor at the end of the box
-	            if (value.length === selectionEnd && value.length + 1 > inputContentWidth) {
-	                end -= 1;
-	            }
-
-	            if (start < 0) {
-	                end -= start;
-	                start = 0;
-	            }
-
-	            if (end > value.length) {
-	                start -= end - value.length;
-	                end = value.length;
-	            }
-
-	            if (start < 0) {
-	                start = 0;
-	            }
-
-	            return {
-	                start: start,
-	                end: end
-	            };
-	        }
-	    }, {
-	        key: 'renderCursorBox',
-
-	        /**
-	         * @param {ObjectClientRect} textBoundingBox
-	         * @param {Object} visibleTextRange
-	         * @param {Number} visibleTextRange.start
-	         * @param {Number} visibleTextRange.end
-	         * @returns {Array<Array<TuiSymbol>>}
-	         */
-	        value: function renderCursorBox(textBoundingBox, visibleTextRange) {
-	            // Render cursor
-	            var _properties2 = this.properties;
-	            var value = _properties2.value;
-	            var selectionEnd = _properties2.selectionEnd;
-
-	            var cursorWidth = 1;
-	            var textAtCursor = value.substr(selectionEnd, cursorWidth);
-
-	            // End of text
-	            if (textAtCursor === '') {
-	                textAtCursor = ' ';
-	            }
-
-	            var cursorLeft = textBoundingBox.left + selectionEnd - visibleTextRange.start;
-	            var cursorRight = cursorLeft + cursorWidth;
-
-	            var clientRect = {
-	                left: cursorLeft,
-	                top: textBoundingBox.top,
-	                bottom: textBoundingBox.bottom,
-	                right: cursorRight,
-	                height: textBoundingBox.height,
-	                width: cursorWidth
-	            };
-
-	            return this.fillClientRectsWithText({
-	                content: textAtCursor,
-
-	                // Invert background and text color
-	                style: {
-	                    color: this.style.backgroundColor,
-	                    backgroundColor: this.style.color
-	                },
-	                clientRects: [clientRect]
-	            });
-	        }
-	    }, {
-	        key: 'renderInputTextBox',
-
-	        /**
-	         * @param {ClientRect} textBoundingBox
-	         * @param {Object} visibleTextRange
-	         * @param {Number} visibleTextRange.start
-	         * @param {Number} visibleTextRange.end
-	         * @returns {Array<Array<TuiSymbol>>}
-	         */
-	        value: function renderInputTextBox(textBoundingBox, visibleTextRange) {
-	            var content = this.properties.value.slice(visibleTextRange.start, visibleTextRange.end);
-
-	            return this.fillClientRectsWithText({
-	                content: content,
-	                style: this.style,
-	                clientRects: [textBoundingBox]
-	            });
-	        }
-	    }, {
-	        key: 'serialize',
-
-	        /**
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function serialize() {
-	            // Compute common measurements
-	            var textBoundingBox = this.getInputTextBoundingBox();
-	            var visibleTextRange = this.getVisibleTextRange();
-
-	            // Render
-	            var inputBox = _get(Object.getPrototypeOf(InputSerializer.prototype), 'serialize', this).call(this);
-	            var textBox = this.renderInputTextBox(textBoundingBox, visibleTextRange);
-	            var cursorBox = this.renderCursorBox(textBoundingBox, visibleTextRange);
-
-	            inputBox = this.mergeBoxes(inputBox, textBox);
-	            inputBox = this.mergeBoxes(inputBox, cursorBox);
-
-	            return inputBox;
-	        }
-	    }]);
-
-	    return InputSerializer;
-	})(_elementSerializer2['default']);
-
-	exports['default'] = InputSerializer;
-	module.exports = exports['default'];
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _ansi = __webpack_require__(6);
-
-	var _chrome = __webpack_require__(7);
-
-	var _html = __webpack_require__(8);
-
-	var _ascii = __webpack_require__(9);
-
-	exports['default'] = { ansi: _ansi.ansi, chrome: _chrome.chrome, html: _html.html, ascii: _ascii.ascii };
-	module.exports = exports['default'];
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	exports.selectSerializerFor = selectSerializerFor;
-	exports.addSerializer = addSerializer;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _elementSerializer = __webpack_require__(10);
-
-	var _elementSerializer2 = _interopRequireDefault(_elementSerializer);
-
-	var _inputSerializer = __webpack_require__(1);
-
-	var _inputSerializer2 = _interopRequireDefault(_inputSerializer);
-
-	var _specificity = __webpack_require__(14);
-
-	/**
-	 * Ordered by specificity, the most specific and last added element is at the end
-	 * @type {{selector: String, specificity: String, serializer: Serializer}[]}
-	 */
-	var serializers = [];
-
-	/**
-	 * @param {{specificity: String}} a
-	 * @param {{specificity: String}} b
-	 * @returns {Number}
-	 */
-	function sortBySpecificity(a, b) {
-	    if (a.specificity > b.specificity) {
-	        return 1;
-	    }
-
-	    if (a.specificity < b.specificity) {
-	        return -1;
-	    }
-
-	    return 0;
-	}
-
-	/**
-	 * @param {HTMLElement} node
-	 * @returns {String}
-	 */
-	function getMatchFunctionFor(node) {
-	    var variants = ['matches', 'matchesSelector', 'mozMatchesSelector', 'webkitMatchesSelector'];
-
-	    for (var i = 0; i < variants.length; i++) {
-	        if (typeof node[variants[i]] === 'function') {
-	            return variants[i];
-	        }
-	    }
-
-	    throw new Error('match function is not found');
-	}
-
-	/**
-	 * @param {HTMLElement} node
-	 * @param {Function} node.matches
-	 * @returns {Function}
-	 */
-
-	function selectSerializerFor(node) {
-	    var matchedSerializers = serializers.filter(function (serializer) {
-	        return node[getMatchFunctionFor(node)](serializer.selector);
-	    });
-
-	    // the last serializer is the most specific(by specificity and order of adding)
-	    var Serializer = matchedSerializers[matchedSerializers.length - 1].serializer;
-
-	    /**
-	     * @param {TuiElement} tuiElement
-	     * @param {Object} options
-	     */
-	    return function (tuiElement, options) {
-	        var serializer = new Serializer(tuiElement, options);
-	        return serializer.serialize();
-	    };
-	}
-
-	/**
-	 * @param {String} selector
-	 * @param {Serializer} serializer
-	 * @example
-	 *  add('table', TableSerializer);
-	 *  add('input[type="progress"]', ProgressBarSerializer);
-	 */
-
-	function addSerializer(selector, serializer) {
-	    if (typeof selector !== 'string') {
-	        throw new TypeError('`selector` should be a string');
-	    }
-
-	    if (typeof serializer !== 'function') {
-	        throw new TypeError('`serializer` should be a function');
-	    }
-
-	    (0, _specificity.calculate)(selector).forEach(function (_ref) {
-	        var selector = _ref.selector;
-	        var specificity = _ref.specificity;
-
-	        serializers.push({ selector: selector, serializer: serializer, specificity: specificity });
-	    });
-
-	    serializers.sort(sortBySpecificity);
-	}
-
-	// Matches on all TuiElements
-	addSerializer('*', _elementSerializer2['default']);
-
-	// Matches all inputs
-	addSerializer('input,select,textarea', _inputSerializer2['default']);
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _tuiSymbol = __webpack_require__(12);
-
-	var _tuiSymbol2 = _interopRequireDefault(_tuiSymbol);
-
-	/**
-	 * @abstract
-	 */
-
-	var TuiNode = (function () {
-	    /**
-	     * @param {Node} node
-	     */
-
-	    function TuiNode(node) {
-	        _classCallCheck(this, TuiNode);
-
-	        if (!node.ownerDocument) {
-	            throw new Error('Can not serialize detached node');
-	        }
-	    }
-
-	    _createClass(TuiNode, [{
-	        key: 'getNormalizedClientRectOf',
-
-	        /**
-	         * @param {ClientRect} clientRect
-	         * @param {Number[]} scale
-	         * @returns {ObjectClientRect}
-	         */
-	        value: function getNormalizedClientRectOf(clientRect, _ref) {
-	            var scale = _ref.scale;
-
-	            var _ref2 = scale || [];
-
-	            var _ref22 = _slicedToArray(_ref2, 2);
-
-	            var scaleX = _ref22[0];
-	            var scaleY = _ref22[1];
-
-	            scaleX = scaleX || 1;
-	            scaleY = scaleY || 1;
-
-	            return {
-	                bottom: Math.round(clientRect.bottom / scaleY),
-	                height: Math.round(clientRect.height / scaleY),
-	                left: Math.round(clientRect.left / scaleX),
-	                right: Math.round(clientRect.right / scaleX),
-	                top: Math.round(clientRect.top / scaleY),
-	                width: Math.round(clientRect.width / scaleX)
-	            };
-	        }
-	    }, {
-	        key: 'normalizeClientRects',
-
-	        /**
-	         * @param {ClientRect[]} clientRects
-	         * @param {Number[]} scale
-	         * @returns {ObjectClientRect[]}
-	         */
-	        value: function normalizeClientRects(clientRects, _ref3) {
-	            var _this = this;
-
-	            var scale = _ref3.scale;
-
-	            return Array.from(clientRects, function (clientRect) {
-	                return _this.getNormalizedClientRectOf(clientRect, { scale: scale });
-	            });
-	        }
-	    }, {
-	        key: 'uniteSymbols',
-
-	        /**
-	         *
-	         * @param {TuiSymbol} symbolA
-	         * @param {TuiSymbol} symbolB
-	         * @returns {(TuiSymbol|null)[]}
-	         */
-	        value: function uniteSymbols(symbolA, symbolB) {
-	            if (!symbolA) {
-	                return [null, symbolB];
-	            }
-
-	            if ((0, _tuiSymbol.isSameStyleSymbol)(symbolA, symbolB)) {
-	                return [new _tuiSymbol2['default'](symbolA.char + symbolB.char, symbolA.style), null];
-	            }
-
-	            return [symbolA, symbolB];
-	        }
-	    }, {
-	        key: 'toArray',
-
-	        /**
-	         *
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function toArray() {
-	            return [[]];
-	        }
-	    }, {
-	        key: 'toCompressedArray',
-
-	        /**
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function toCompressedArray() {
-	            var _this2 = this;
-
-	            return this.toArray().map(function (row) {
-	                return row.reduce(function (row, symbol) {
-	                    var lastSymbol = row[row.length - 1];
-
-	                    var _uniteSymbols = _this2.uniteSymbols(lastSymbol, symbol);
-
-	                    var _uniteSymbols2 = _slicedToArray(_uniteSymbols, 2);
-
-	                    var unitedSymbols = _uniteSymbols2[0];
-	                    var extraSymbol = _uniteSymbols2[1];
-
-	                    if (unitedSymbols === null) {
-	                        row.push(extraSymbol);
-	                        return row;
-	                    }
-
-	                    if (unitedSymbols !== null) {
-	                        row[row.length - 1] = unitedSymbols;
-	                    }
-
-	                    if (extraSymbol !== null) {
-	                        row.push(extraSymbol);
-	                    }
-
-	                    return row;
-	                }, []);
-	            });
-	        }
-	    }, {
-	        key: 'toString',
-
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        value: function toString() {
-	            return this.toArray().map(function (row) {
-	                return row.join('');
-	            }).join('\n');
-	        }
-	    }]);
-
-	    return TuiNode;
-	})();
-
-	exports['default'] = TuiNode;
-	module.exports = exports['default'];
-
-	/**
-	 * @typedef {Object} ObjectClientRect
-	 * @property {Number} bottom
-	 * @property {Number} height
-	 * @property {Number} left
-	 * @property {Number} right
-	 * @property {Number} top
-	 * @property {Number} width
-	 */
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _tuiNode = __webpack_require__(4);
-
-	var _tuiNode2 = _interopRequireDefault(_tuiNode);
-
-	var _serializersTextSerializer = __webpack_require__(13);
-
-	var _serializersTextSerializer2 = _interopRequireDefault(_serializersTextSerializer);
-
-	var TuiText = (function (_TuiNode) {
-	  /**
-	   * @param {Node} node
-	   * @param {CssStyle} style
-	   * @param {Object} [options={}]
-	   * @param {Number[]} [options.scale]
-	   * @constructor
-	   */
-
-	  function TuiText(node, style, options) {
-	    _classCallCheck(this, TuiText);
-
-	    _get(Object.getPrototypeOf(TuiText.prototype), 'constructor', this).call(this, node);
-	    if (node.nodeType !== 3) {
-	      throw new Error('Only text node is supported');
-	    }
-
-	    var range = node.ownerDocument.createRange();
-	    range.selectNodeContents(node);
-
-	    this.options = options || {};
-
-	    /**
-	     * @type {ClientRect}
-	     */
-	    this.boundingBox = this.getNormalizedClientRectOf(range.getBoundingClientRect(), this.options);
-
-	    /**
-	     * @type {ObjectClientRect[]}
-	     */
-	    this.clientRects = this.normalizeClientRects(range.getClientRects(), this.options);
-
-	    this.content = node.textContent;
-
-	    this.style = style;
-	  }
-
-	  _inherits(TuiText, _TuiNode);
-
-	  _createClass(TuiText, [{
-	    key: 'toArray',
-
-	    /**
-	     *
-	     * @returns {Array<Array<(TuiSymbol)>>}
-	     */
-	    value: function toArray() {
-	      return new _serializersTextSerializer2['default'](this, this.options).serialize();
-	    }
-	  }]);
-
-	  return TuiText;
-	})(_tuiNode2['default']);
-
-	exports['default'] = TuiText;
-	module.exports = exports['default'];
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	exports.ansi = ansi;
-	var ansiColors = {
-	    // # Styles
-	    bold: ['\u001b[1m', '\u001b[22m'],
-	    italic: ['\u001b[3m', '\u001b[23m'],
-	    underline: ['\u001b[4m', '\u001b[24m'],
-	    strikethrough: ['\u001b[9m', '\u001b[29m'],
-
-	    // # Text colors
-	    // ## Grayscale
-	    'rgb(255, 255, 255)': ['\u001b[37m', '\u001b[39m'],
-	    'rgb(128, 128, 128)': ['\u001b[90m', '\u001b[39m'],
-	    'rgb(0, 0, 0)': ['\u001b[30m', '\u001b[39m'],
-	    // ## Colors
-	    'rgb(0, 0, 255)': ['\u001b[34m', '\u001b[39m'],
-	    'rgb(0, 255, 255)': ['\u001b[36m', '\u001b[39m'],
-	    'rgb(0, 128, 0)': ['\u001b[32m', '\u001b[39m'],
-	    'rgb(255, 0, 255)': ['\u001b[35m', '\u001b[39m'],
-	    'rgb(255, 0, 0)': ['\u001b[31m', '\u001b[39m'],
-	    'rgb(255, 255, 0)': ['\u001b[33m', '\u001b[39m'],
-	    'rgba(0, 0, 0, 0)': ['', ''],
-
-	    // # Background colors
-	    // ## Grayscale
-	    'rgb(255, 255, 255)BG': ['\u001b[47m', '\u001b[49m'],
-	    'rgb(0, 0, 0)BG': ['\u001b[49;5;8m', '\u001b[49m'],
-	    'rgb(128, 128, 128)BG': ['\u001b[40m', '\u001b[49m'],
-	    // ## Colors
-	    'rgb(0, 0, 255)BG': ['\u001b[44m', '\u001b[49m'],
-	    'rgb(0, 255, 255)BG': ['\u001b[46m', '\u001b[49m'],
-	    'rgb(0, 128, 0)BG': ['\u001b[42m', '\u001b[49m'],
-	    'rgb(255, 0, 255)BG': ['\u001b[45m', '\u001b[49m'],
-	    'rgb(255, 0, 0)BG': ['\u001b[41m', '\u001b[49m'],
-	    'rgb(255, 255, 0)BG': ['\u001b[43m', '\u001b[49m'],
-	    'rgba(0, 0, 0, 0)BG': ['', '']
-	};
-
-	/**
-	 *
-	 * @param {string} string
-	 * @param {string[]} style
-	 * @returns {*}
-	 */
-	function wrapString(string, style) {
-	    var pair = ansiColors[style];
-
-	    if (!pair) {
-	        return string;
-	    }
-
-	    return pair[0] + string + pair[1];
-	}
-
-	/**
-	 *
-	 * @param {TuiSymbol} symbol
-	 * @returns {string[]}
-	 */
-	function ansiSymbol(symbol) {
-	    var character = wrapString(symbol.char, symbol.style.color);
-	    character = wrapString(character, symbol.style.backgroundColor + 'BG');
-
-	    if (symbol.style.fontStyle === 'italic') {
-	        character = wrapString(character, 'italic');
-	    }
-
-	    if (symbol.style.fontWeight === 'bold') {
-	        character = wrapString(character, 'bold');
-	    }
-
-	    if (symbol.style.textDecoration === 'underline') {
-	        character = wrapString(character, 'underline');
-	    }
-
-	    if (symbol.style.textDecoration === 'line-through') {
-	        character = wrapString(character, 'strikethrough');
-	    }
-
-	    return character;
-	}
-
-	/**
-	 *
-	 * @param {Array<Array<(TuiSymbol)>>} box
-	 * @returns {string}
-	 */
-
-	function ansi(box) {
-	    return box.map(function (row) {
-	        return row.map(ansiSymbol).join('');
-	    }).join('\n');
-	}
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-	exports.chrome = chrome;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _commonSerializeStyle = __webpack_require__(15);
-
-	var _commonSerializeStyle2 = _interopRequireDefault(_commonSerializeStyle);
-
-	/**
-	 * @param {TuiSymbol} symbol
-	 * @returns {string[]}
-	 */
-	function chromeSymbol(symbol) {
-	    var char = '%c' + symbol.char;
-	    var style = (0, _commonSerializeStyle2['default'])(symbol.style);
-
-	    return [char, style];
-	}
-
-	/**
-	 *
-	 * @param {Array<Array<(TuiSymbol)>>} box
-	 * @returns {string[]}
-	 */
-
-	function chrome(box) {
-	    var characters = [];
-	    var styles = [];
-
-	    box.forEach(function (row) {
-	        var rowCharacters = '';
-	        var rowStyles = [];
-
-	        row.forEach(function (symbol) {
-	            var _chromeSymbol = chromeSymbol(symbol);
-
-	            var _chromeSymbol2 = _slicedToArray(_chromeSymbol, 2);
-
-	            var character = _chromeSymbol2[0];
-	            var style = _chromeSymbol2[1];
-
-	            rowCharacters += character;
-	            rowStyles.push(style);
-	        });
-
-	        characters.push(rowCharacters);
-	        styles.push.apply(styles, rowStyles);
-	    });
-
-	    return [characters.join('\n')].concat(styles);
-	}
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.html = html;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _commonSerializeStyle = __webpack_require__(15);
-
-	var _commonSerializeStyle2 = _interopRequireDefault(_commonSerializeStyle);
-
-	var _htmlEntities = __webpack_require__(18);
-
-	var entities = new _htmlEntities.AllHtmlEntities();
-
-	/**
-	 *
-	 * @param {TuiSymbol} symbol
-	 * @returns {string[]}
-	 */
-	function htmlSymbol(symbol) {
-	  var style = (0, _commonSerializeStyle2['default'])(symbol.style);
-
-	  return '<span style="' + style + '">' + entities.encode(symbol.char) + '</span>';
-	}
-
-	/**
-	 *
-	 * @param {Array<Array<(TuiSymbol)>>} box
-	 * @returns {string}
-	 */
-
-	function html(box) {
-	  return box.map(function (row) {
-	    return row.map(htmlSymbol).join('');
-	  }).join('\n');
-	}
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 *
-	 * @param {TuiSymbol} symbol
-	 * @returns {string}
-	 */
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.ascii = ascii;
-	function asciiSymbol(symbol) {
-	  return symbol.char;
-	}
-
-	/**
-	 *
-	 * @param {Array<Array<(TuiSymbol)>>} box
-	 * @returns {string}
-	 */
-
-	function ascii(box) {
-	  return box.map(function (row) {
-	    return row.map(asciiSymbol).join('');
-	  }).join('\n');
-	}
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _tuiSymbol = __webpack_require__(12);
-
-	var _tuiSymbol2 = _interopRequireDefault(_tuiSymbol);
-
-	var _characters = __webpack_require__(16);
-
-	var _serializer = __webpack_require__(17);
-
-	var _serializer2 = _interopRequireDefault(_serializer);
-
-	var DefaultSerializer = (function (_Serializer) {
-	    /**
-	     * @param {TuiElement} tuiElement
-	     * @param {Object} options
-	     */
-
-	    function DefaultSerializer(tuiElement, options) {
-	        _classCallCheck(this, DefaultSerializer);
-
-	        _get(Object.getPrototypeOf(DefaultSerializer.prototype), 'constructor', this).call(this, tuiElement, options);
-
-	        /**
-	         * @type {CssStyle}
-	         */
-	        this.style = tuiElement.style;
-	        /**
-	         * @type {ObjectClientRect[]}
-	         */
-	        this.clientRects = tuiElement.clientRects;
-	        /**
-	         * @type {ObjectClientRect}
-	         */
-	        this.boundingBox = tuiElement.boundingBox;
-	        /**
-	         * @type {Object}
-	         */
-	        this.scroll = tuiElement.scroll;
-	        /**
-	         * @type {Object[]}
-	         */
-	        this.content = tuiElement.content;
-	    }
-
-	    _inherits(DefaultSerializer, _Serializer);
-
-	    _createClass(DefaultSerializer, [{
-	        key: 'fillBox',
-
-	        /**
-	         * @param {ObjectClientRect} clientRect
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function fillBox(clientRect) {
-	            var width = clientRect.width;
-	            var height = clientRect.height;
-
-	            var background = new _tuiSymbol2['default'](_characters.BACKGROUND_CHARACTER, {
-	                color: this.style.color,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            var box = new Array(height);
-	            for (var y = 0; y < height; y++) {
-	                box[y] = new Array(width);
-	                for (var x = 0; x < width; x++) {
-	                    box[y][x] = background;
-	                }
-	            }
-
-	            return box;
-	        }
-	    }, {
-	        key: 'fillLeftBorder',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ObjectClientRect} clientRect
-	         */
-	        value: function fillLeftBorder(box, clientRect) {
-	            if (!this.style.borderLeftWidth) {
-	                return;
-	            }
-
-	            var leftBorder = new _tuiSymbol2['default'](_characters.BORDER.SOLID.LEFT, {
-	                color: this.style.borderLeftColor,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            var height = clientRect.height;
-
-	            for (var y = 0; y < height; y++) {
-	                box[y][0] = leftBorder;
-	            }
-	        }
-	    }, {
-	        key: 'fillRightBorder',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ObjectClientRect} clientRect
-	         */
-	        value: function fillRightBorder(box, clientRect) {
-	            if (!this.style.borderRightWidth) {
-	                return;
-	            }
-
-	            var rightBorder = new _tuiSymbol2['default'](_characters.BORDER.SOLID.RIGHT, {
-	                color: this.style.borderRightColor,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            var height = clientRect.height;
-	            var width = clientRect.width;
-
-	            for (var y = 0; y < height; y++) {
-	                box[y][width - 1] = rightBorder;
-	            }
-	        }
-	    }, {
-	        key: 'fillTopBorder',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ObjectClientRect} clientRect
-	         */
-	        value: function fillTopBorder(box, clientRect) {
-	            if (!this.style.borderTopWidth) {
-	                return;
-	            }
-
-	            var topBorder = new _tuiSymbol2['default'](_characters.BORDER.SOLID.TOP, {
-	                color: this.style.borderTopColor,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            var height = clientRect.height;
-	            var width = clientRect.width;
-
-	            for (var x = 1; x < width - 1; x++) {
-	                box[0][x] = topBorder;
-	            }
-
-	            // Top Left corner
-	            if (box[0][0].char === _characters.BORDER.SOLID.LEFT) {
-	                box[0][0] = new _tuiSymbol2['default'](_characters.BORDER.SOLID.TOP_LEFT, {
-	                    color: this.style.borderTopColor,
-	                    backgroundColor: this.style.backgroundColor
-	                });
-	            }
-
-	            // Top Right corner
-	            if (box[0][width - 1].char === _characters.BORDER.SOLID.RIGHT) {
-	                box[0][width - 1] = new _tuiSymbol2['default'](_characters.BORDER.SOLID.TOP_RIGHT, {
-	                    color: this.style.borderTopColor,
-	                    backgroundColor: this.style.backgroundColor
-	                });
-	            }
-	        }
-	    }, {
-	        key: 'fillBottomBorder',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ObjectClientRect} clientRect
-	         */
-	        value: function fillBottomBorder(box, clientRect) {
-	            if (!this.style.borderBottomWidth) {
-	                return;
-	            }
-
-	            var bottomBorder = new _tuiSymbol2['default'](_characters.BORDER.SOLID.BOTTOM, {
-	                color: this.style.borderBottomColor,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            var height = clientRect.height;
-	            var width = clientRect.width;
-
-	            for (var x = 1; x < width - 1; x++) {
-	                box[height - 1][x] = bottomBorder;
-	            }
-
-	            // Bottom Left corner
-	            if (box[height - 1][0].char === _characters.BORDER.SOLID.LEFT) {
-	                box[height - 1][0] = new _tuiSymbol2['default'](_characters.BORDER.SOLID.BOTTOM_LEFT, {
-	                    color: this.style.borderTopColor,
-	                    backgroundColor: this.style.backgroundColor
-	                });
-	            }
-
-	            // Bottom Right corner
-	            if (box[height - 1][width - 1].char === _characters.BORDER.SOLID.RIGHT) {
-	                box[height - 1][width - 1] = new _tuiSymbol2['default'](_characters.BORDER.SOLID.BOTTOM_RIGHT, {
-	                    color: this.style.borderTopColor,
-	                    backgroundColor: this.style.backgroundColor
-	                });
-	            }
-	        }
-	    }, {
-	        key: 'hasHorizontalScrollBars',
-
-	        /**
-	         * @param {ObjectClientRect} clientRect
-	         * @returns {boolean}
-	         */
-	        value: function hasHorizontalScrollBars(clientRect) {
-	            var overflow = this.style.overflow;
-
-	            if (overflow === 'visible' || overflow === 'hidden') {
-	                return false;
-	            }
-
-	            return this.scroll.scrollWidth > clientRect.width;
-	        }
-	    }, {
-	        key: 'hasVerticalScrollBars',
-
-	        /**
-	         * @param {ObjectClientRect} clientRect
-	         * @returns {boolean}
-	         */
-	        value: function hasVerticalScrollBars(clientRect) {
-	            var overflow = this.style.overflow;
-
-	            if (overflow === 'visible' || overflow === 'hidden') {
-	                return false;
-	            }
-
-	            return this.scroll.scrollHeight > clientRect.height;
-	        }
-	    }, {
-	        key: 'getTuiBorderSize',
-
-	        /**
-	         * @param {Number} borderSize
-	         * @returns {Number}
-	         */
-	        value: function getTuiBorderSize(borderSize) {
-	            if (borderSize > 0) {
-	                return 1;
-	            }
-
-	            return 0;
-	        }
-	    }, {
-	        key: 'renderVerticalScrollBar',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ObjectClientRect} clientRect
-	         */
-	        value: function renderVerticalScrollBar(box, clientRect) {
-	            /* jshint maxstatements: 20, maxcomplexity: 7 */
-	            if (!this.hasVerticalScrollBars(clientRect)) {
-	                return;
-	            }
-
-	            var borderRightWidth = this.getTuiBorderSize(this.style.borderRightWidth);
-	            var borderBottomWidth = this.getTuiBorderSize(this.style.borderBottomWidth);
-	            var borderTopWidth = this.getTuiBorderSize(this.style.borderTopWidth);
-	            var height = clientRect.height;
-	            var availableScrollHeight = height - borderBottomWidth - borderTopWidth;
-	            var scrollHeight = this.scroll.scrollHeight;
-	            var scrollTop = this.scroll.scrollTop;
-
-	            var trackHeight = Math.max(Math.floor(height / scrollHeight * availableScrollHeight), 1);
-	            var trackTop = Math.floor(scrollTop / scrollHeight * availableScrollHeight);
-	            var trackBottom = trackTop + trackHeight;
-
-	            var scrollBarBackground = new _tuiSymbol2['default'](_characters.SCROLL.BACKGROUND, {
-	                color: this.style.color,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            var scrollBarTrack = new _tuiSymbol2['default'](_characters.SCROLL.TRACK, {
-	                color: this.style.color,
-	                backgroundColor: this.style.backgroundColor
-	            });
-
-	            // Fill and Track
-	            for (var y = borderTopWidth; y < box.length - borderBottomWidth; y++) {
-	                var row = box[y];
-	                var scrollBarPosition = row.length - borderRightWidth - 1;
-	                if (y >= trackTop && y <= trackBottom) {
-	                    row[scrollBarPosition] = scrollBarTrack;
-	                } else {
-	                    row[scrollBarPosition] = scrollBarBackground;
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'renderHorizontalScrollBar',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ObjectClientRect} clientRect
-	         */
-	        value: function renderHorizontalScrollBar(box, clientRect) {
-	            if (!this.hasHorizontalScrollBars(clientRect)) {
-	                return;
-	            }
-
-	            return box;
-	        }
-	    }, {
-	        key: 'renderBox',
-
-	        /**
-	         * @param {ObjectClientRect} clientRect
-	         * @param {Boolean} hasLeftBorder
-	         * @param {Boolean} hasRightBorder
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function renderBox(clientRect, _ref) {
-	            var hasLeftBorder = _ref.hasLeftBorder;
-	            var hasRightBorder = _ref.hasRightBorder;
-
-	            var box = this.fillBox(clientRect);
-	            if (hasLeftBorder) {
-	                this.fillLeftBorder(box, clientRect);
-	            }
-	            if (hasRightBorder) {
-	                this.fillRightBorder(box, clientRect);
-	            }
-	            this.fillTopBorder(box, clientRect);
-	            this.fillBottomBorder(box, clientRect);
-	            this.renderVerticalScrollBar(box, clientRect);
-	            box = this.shiftBox(box, clientRect);
-
-	            return box;
-	        }
-	    }, {
-	        key: 'renderBoxes',
-
-	        /**
-	         * @returns {Array<Array<Array<(TuiSymbol)>>>}
-	         */
-	        value: function renderBoxes() {
-	            var _this = this;
-
-	            return this.clientRects.map(function (clientRect, index, _ref2) {
-	                var length = _ref2.length;
-
-	                var hasLeftBorder = index === 0;
-	                var hasRightBorder = index === length - 1;
-	                return _this.renderBox(clientRect, { hasLeftBorder: hasLeftBorder, hasRightBorder: hasRightBorder });
-	            });
-	        }
-	    }, {
-	        key: 'cropBoxUsing',
-
-	        /**
-	         *
-	         * @param {Number} bottom
-	         * @param {Number} right
-	         * @param {Number} top
-	         * @param {Number} left
-	         * @returns {Function}
-	         */
-	        value: function cropBoxUsing(_ref3) {
-	            var bottom = _ref3.bottom;
-	            var right = _ref3.right;
-	            var top = _ref3.top;
-	            var left = _ref3.left;
-
-	            /* jshint maxcomplexity: 7 */
-	            /**
-	             * @param {Array<Array<(TuiSymbol)>>} box
-	             * @return {Array<Array<(TuiSymbol)>>}
-	             */
-	            return function cropBox(box) {
-	                if (bottom <= 0 || right <= 0) {
-	                    return [[]];
-	                }
-	                var croppedBox = new Array(bottom);
-
-	                for (var y = top; y < box.length && y < bottom; y++) {
-	                    var row = box[y];
-	                    croppedBox[y] = new Array(right);
-
-	                    if (!row) {
-	                        continue;
-	                    }
-
-	                    for (var x = left; x < row.length && x < right; x++) {
-	                        croppedBox[y][x] = row[x];
-	                    }
-	                }
-
-	                return croppedBox;
-	            };
-	        }
-	    }, {
-	        key: 'cropBoxFactory',
-
-	        /**
-	         * @returns {Function} crop function
-	         */
-	        value: function cropBoxFactory() {
-	            // Do not crop
-	            if (this.style.overflow === 'visible') {
-	                return function (box) {
-	                    return box;
-	                };
-	            }
-
-	            var bottom = this.boundingBox.bottom - this.getTuiBorderSize(this.style.borderBottomWidth);
-	            var right = this.boundingBox.right - this.getTuiBorderSize(this.style.borderRightWidth);
-	            var top = this.boundingBox.top + this.getTuiBorderSize(this.style.borderTopWidth);
-	            var left = this.boundingBox.left + this.getTuiBorderSize(this.style.borderLeftWidth);
-
-	            return this.cropBoxUsing({ bottom: bottom, right: right, top: top, left: left });
-	        }
-	    }, {
-	        key: 'renderContent',
-
-	        /**
-	         * @returns {Array<Array<Array<(TuiSymbol)>>>}
-	         */
-	        value: function renderContent() {
-	            return this.content.map(function (item) {
-	                return item.toArray();
-	            }).map(this.cropBoxFactory());
-	        }
-	    }, {
-	        key: 'serialize',
-
-	        /**
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function serialize() {
-	            var boxes = this.renderBoxes();
-	            var content = this.renderContent();
-
-	            return boxes.concat(content).reduce(this.mergeBoxes.bind(this), []);
-	        }
-	    }]);
-
-	    return DefaultSerializer;
-	})(_serializer2['default']);
-
-	exports['default'] = DefaultSerializer;
-	module.exports = exports['default'];
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _tuiNode = __webpack_require__(4);
-
-	var _tuiNode2 = _interopRequireDefault(_tuiNode);
-
-	var _tuiText = __webpack_require__(5);
-
-	var _tuiText2 = _interopRequireDefault(_tuiText);
-
-	var _serializers = __webpack_require__(3);
+	var selectSerializerFor = __webpack_require__(3).selectSerializerFor;
 
 	var TuiElement = (function (_TuiNode) {
 	    /**
@@ -1447,9 +90,9 @@ var htmlTui =
 	        _classCallCheck(this, TuiElement);
 
 	        /* jshint maxstatements: 15 */
-	        _get(Object.getPrototypeOf(TuiElement.prototype), 'constructor', this).call(this, node);
+	        _get(Object.getPrototypeOf(TuiElement.prototype), "constructor", this).call(this, node);
 	        if (node.nodeType !== 1) {
-	            throw new Error('Only element node is supported');
+	            throw new Error("Only element node is supported");
 	        }
 
 	        this.options = options || {};
@@ -1503,245 +146,1468 @@ var htmlTui =
 	        /**
 	         * @type {function}
 	         */
-	        this.serializeElement = (0, _serializers.selectSerializerFor)(node);
+	        this.serializeElement = selectSerializerFor(node);
 	    }
 
 	    _inherits(TuiElement, _TuiNode);
 
-	    _createClass(TuiElement, [{
-	        key: 'getContentOf',
+	    _createClass(TuiElement, {
+	        getContentOf: {
 
-	        /**
-	         * @param {Node} node
-	         * @returns {(TuiElement|TuiText)[]}
-	         */
-	        value: function getContentOf(node) {
-	            var nodes = node.childNodes;
-	            var content = [];
-	            for (var i = 0; i < nodes.length; i++) {
-	                var childNode = nodes[i];
-	                if (childNode.nodeType === 1) {
-	                    content.push(new TuiElement(childNode, this.options));
+	            /**
+	             * @param {Node} node
+	             * @returns {(TuiElement|TuiText)[]}
+	             */
+
+	            value: function getContentOf(node) {
+	                var nodes = node.childNodes;
+	                var content = [];
+	                for (var i = 0; i < nodes.length; i++) {
+	                    var childNode = nodes[i];
+	                    if (childNode.nodeType === 1) {
+	                        content.push(new TuiElement(childNode, this.options));
+	                    }
+	                    if (childNode.nodeType === 3) {
+	                        content.push(new TuiText(childNode, this.style, this.options));
+	                    }
 	                }
-	                if (childNode.nodeType === 3) {
-	                    content.push(new _tuiText2['default'](childNode, this.style, this.options));
-	                }
+
+	                return content;
 	            }
+	        },
+	        getProperties: {
 
-	            return content;
+	            /**
+	             *
+	             * @param node
+	             */
+
+	            value: function getProperties(node) {
+	                return {
+	                    value: node.value,
+	                    checked: node.checked,
+	                    selectionStart: node.selectionStart,
+	                    selectionEnd: node.selectionEnd
+	                };
+	            }
+	        },
+	        getStyle: {
+	            value: function getStyle(node) {
+	                var computedStyle = node.ownerDocument.defaultView.getComputedStyle(node);
+
+	                // Support only subset of CSS
+	                return {
+	                    // Symbol-related properties
+	                    color: computedStyle.color,
+	                    backgroundColor: computedStyle.backgroundColor,
+
+	                    // Supported: normal, bold
+	                    fontWeight: computedStyle.fontWeight,
+
+	                    // Supported: none, underline, line-through
+	                    textDecoration: computedStyle.textDecoration,
+
+	                    // Supported: none, italic
+	                    fontStyle: computedStyle.fontStyle,
+
+	                    // Box-related properties
+	                    borderLeftColor: computedStyle.borderLeftColor,
+	                    borderRightColor: computedStyle.borderRightColor,
+	                    borderTopColor: computedStyle.borderTopColor,
+	                    borderBottomColor: computedStyle.borderBottomColor,
+
+	                    // Supported: 1px, 0px, none
+	                    borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
+	                    borderRightWidth: parseInt(computedStyle.borderRightWidth),
+	                    borderTopWidth: parseInt(computedStyle.borderTopWidth),
+	                    borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
+
+	                    paddingLeft: parseInt(computedStyle.paddingLeft),
+	                    paddingRight: parseInt(computedStyle.paddingRight),
+	                    paddingTop: parseInt(computedStyle.paddingTop),
+	                    paddingBottom: parseInt(computedStyle.paddingBottom),
+
+	                    overflow: computedStyle.overflow,
+
+	                    // Supported: normal, pre, pre-wrap
+	                    whiteSpace: computedStyle.whiteSpace
+	                };
+	            }
+	        },
+	        getScroll: {
+	            value: function getScroll(node) {
+	                return {
+	                    scrollHeight: node.scrollHeight,
+	                    scrollWidth: node.scrollWidth,
+	                    scrollLeft: node.scrollLeft,
+	                    scrollTop: node.scrollTop
+	                };
+	            }
+	        },
+	        toArray: {
+
+	            /**
+	             *
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function toArray() {
+	                return this.serializeElement.call(null, this);
+	            }
 	        }
-	    }, {
-	        key: 'getProperties',
-
-	        /**
-	         *
-	         * @param node
-	         */
-	        value: function getProperties(node) {
-	            return {
-	                value: node.value,
-	                checked: node.checked,
-	                selectionStart: node.selectionStart,
-	                selectionEnd: node.selectionEnd
-	            };
-	        }
-	    }, {
-	        key: 'getStyle',
-	        value: function getStyle(node) {
-	            var computedStyle = node.ownerDocument.defaultView.getComputedStyle(node);
-
-	            // Support only subset of CSS
-	            return {
-	                // Symbol-related properties
-	                color: computedStyle.color,
-	                backgroundColor: computedStyle.backgroundColor,
-
-	                // Supported: normal, bold
-	                fontWeight: computedStyle.fontWeight,
-
-	                // Supported: none, underline, line-through
-	                textDecoration: computedStyle.textDecoration,
-
-	                // Supported: none, italic
-	                fontStyle: computedStyle.fontStyle,
-
-	                // Box-related properties
-	                borderLeftColor: computedStyle.borderLeftColor,
-	                borderRightColor: computedStyle.borderRightColor,
-	                borderTopColor: computedStyle.borderTopColor,
-	                borderBottomColor: computedStyle.borderBottomColor,
-
-	                // Supported: 1px, 0px, none
-	                borderLeftWidth: parseInt(computedStyle.borderLeftWidth),
-	                borderRightWidth: parseInt(computedStyle.borderRightWidth),
-	                borderTopWidth: parseInt(computedStyle.borderTopWidth),
-	                borderBottomWidth: parseInt(computedStyle.borderBottomWidth),
-
-	                paddingLeft: parseInt(computedStyle.paddingLeft),
-	                paddingRight: parseInt(computedStyle.paddingRight),
-	                paddingTop: parseInt(computedStyle.paddingTop),
-	                paddingBottom: parseInt(computedStyle.paddingBottom),
-
-	                overflow: computedStyle.overflow,
-
-	                // Supported: normal, pre, pre-wrap
-	                whiteSpace: computedStyle.whiteSpace
-	            };
-	        }
-	    }, {
-	        key: 'getScroll',
-	        value: function getScroll(node) {
-	            return {
-	                scrollHeight: node.scrollHeight,
-	                scrollWidth: node.scrollWidth,
-	                scrollLeft: node.scrollLeft,
-	                scrollTop: node.scrollTop
-	            };
-	        }
-	    }, {
-	        key: 'toArray',
-
-	        /**
-	         *
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function toArray() {
-	            return this.serializeElement.call(null, this);
-	        }
-	    }]);
+	    });
 
 	    return TuiElement;
-	})(_tuiNode2['default']);
+	})(TuiNode);
 
-	exports['default'] = TuiElement;
-	module.exports = exports['default'];
+	module.exports = TuiElement;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var ansi = __webpack_require__(6).ansi;
+
+	var chrome = __webpack_require__(9).chrome;
+
+	var html = __webpack_require__(7).html;
+
+	var ascii = __webpack_require__(8).ascii;
+
+	module.exports = { ansi: ansi, chrome: chrome, html: html, ascii: ascii };
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	/**
+	 * @param {HTMLElement} node
+	 * @param {Function} node.matches
+	 * @returns {Function}
+	 */
+	exports.selectSerializerFor = selectSerializerFor;
+
+	/**
+	 * @param {String} selector
+	 * @param {Serializer} serializer
+	 * @example
+	 *  add('table', TableSerializer);
+	 *  add('input[type="progress"]', ProgressBarSerializer);
+	 */
+	exports.addSerializer = addSerializer;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var ElementSerializer = _interopRequire(__webpack_require__(10));
+
+	var InputSerializer = _interopRequire(__webpack_require__(11));
+
+	var calculateSpecificity = __webpack_require__(13).calculate;
+
+	/**
+	 * Ordered by specificity, the most specific and last added element is at the end
+	 * @type {{selector: String, specificity: String, serializer: Serializer}[]}
+	 */
+	var serializers = [];
+
+	/**
+	 * @param {{specificity: String}} a
+	 * @param {{specificity: String}} b
+	 * @returns {Number}
+	 */
+	function sortBySpecificity(a, b) {
+	    if (a.specificity > b.specificity) {
+	        return 1;
+	    }
+
+	    if (a.specificity < b.specificity) {
+	        return -1;
+	    }
+
+	    return 0;
+	}
+
+	/**
+	 * @param {HTMLElement} node
+	 * @returns {String}
+	 */
+	function getMatchFunctionFor(node) {
+	    var variants = ["matches", "matchesSelector", "mozMatchesSelector", "webkitMatchesSelector"];
+
+	    for (var i = 0; i < variants.length; i++) {
+	        if (typeof node[variants[i]] === "function") {
+	            return variants[i];
+	        }
+	    }
+
+	    throw new Error("match function is not found");
+	}
+	function selectSerializerFor(node) {
+	    var matchedSerializers = serializers.filter(function (serializer) {
+	        return node[getMatchFunctionFor(node)](serializer.selector);
+	    });
+
+	    // the last serializer is the most specific(by specificity and order of adding)
+	    var Serializer = matchedSerializers[matchedSerializers.length - 1].serializer;
+
+	    /**
+	     * @param {TuiElement} tuiElement
+	     * @param {Object} options
+	     */
+	    return function (tuiElement, options) {
+	        var serializer = new Serializer(tuiElement, options);
+	        return serializer.serialize();
+	    };
+	}
+
+	function addSerializer(selector, serializer) {
+	    if (typeof selector !== "string") {
+	        throw new TypeError("`selector` should be a string");
+	    }
+
+	    if (typeof serializer !== "function") {
+	        throw new TypeError("`serializer` should be a function");
+	    }
+
+	    calculateSpecificity(selector).forEach(function (_ref) {
+	        var selector = _ref.selector;
+	        var specificity = _ref.specificity;
+
+	        serializers.push({ selector: selector, serializer: serializer, specificity: specificity });
+	    });
+
+	    serializers.sort(sortBySpecificity);
+	}
+
+	// Matches on all TuiElements
+	addSerializer("*", ElementSerializer);
+
+	// Matches all inputs
+	addSerializer("input,select,textarea", InputSerializer);
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+	var _tuiSymbol = __webpack_require__(14);
+
+	var TuiSymbol = _interopRequire(_tuiSymbol);
+
+	var isSameStyleSymbol = _tuiSymbol.isSameStyleSymbol;
+
+	/**
+	 * @abstract
+	 */
+
+	var TuiNode = (function () {
+	    /**
+	     * @param {Node} node
+	     */
+
+	    function TuiNode(node) {
+	        _classCallCheck(this, TuiNode);
+
+	        if (!node.ownerDocument) {
+	            throw new Error("Can not serialize detached node");
+	        }
+	    }
+
+	    _createClass(TuiNode, {
+	        getNormalizedClientRectOf: {
+
+	            /**
+	             * @param {ClientRect} clientRect
+	             * @param {Number[]} scale
+	             * @returns {ObjectClientRect}
+	             */
+
+	            value: function getNormalizedClientRectOf(clientRect, _ref) {
+	                var scale = _ref.scale;
+
+	                var _ref2 = scale || [];
+
+	                var _ref22 = _slicedToArray(_ref2, 2);
+
+	                var scaleX = _ref22[0];
+	                var scaleY = _ref22[1];
+
+	                scaleX = scaleX || 1;
+	                scaleY = scaleY || 1;
+
+	                return {
+	                    bottom: Math.round(clientRect.bottom / scaleY),
+	                    height: Math.round(clientRect.height / scaleY),
+	                    left: Math.round(clientRect.left / scaleX),
+	                    right: Math.round(clientRect.right / scaleX),
+	                    top: Math.round(clientRect.top / scaleY),
+	                    width: Math.round(clientRect.width / scaleX)
+	                };
+	            }
+	        },
+	        normalizeClientRects: {
+
+	            /**
+	             * @param {ClientRect[]} clientRects
+	             * @param {Number[]} scale
+	             * @returns {ObjectClientRect[]}
+	             */
+
+	            value: function normalizeClientRects(clientRects, _ref) {
+	                var _this = this;
+
+	                var scale = _ref.scale;
+
+	                return Array.from(clientRects, function (clientRect) {
+	                    return _this.getNormalizedClientRectOf(clientRect, { scale: scale });
+	                });
+	            }
+	        },
+	        uniteSymbols: {
+
+	            /**
+	             *
+	             * @param {TuiSymbol} symbolA
+	             * @param {TuiSymbol} symbolB
+	             * @returns {(TuiSymbol|null)[]}
+	             */
+
+	            value: function uniteSymbols(symbolA, symbolB) {
+	                if (!symbolA) {
+	                    return [null, symbolB];
+	                }
+
+	                if (isSameStyleSymbol(symbolA, symbolB)) {
+	                    return [new TuiSymbol(symbolA.char + symbolB.char, symbolA.style), null];
+	                }
+
+	                return [symbolA, symbolB];
+	            }
+	        },
+	        toArray: {
+
+	            /**
+	             *
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function toArray() {
+	                return [[]];
+	            }
+	        },
+	        toCompressedArray: {
+
+	            /**
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function toCompressedArray() {
+	                var _this = this;
+
+	                return this.toArray().map(function (row) {
+	                    return row.reduce(function (row, symbol) {
+	                        var lastSymbol = row[row.length - 1];
+
+	                        var _uniteSymbols = _this.uniteSymbols(lastSymbol, symbol);
+
+	                        var _uniteSymbols2 = _slicedToArray(_uniteSymbols, 2);
+
+	                        var unitedSymbols = _uniteSymbols2[0];
+	                        var extraSymbol = _uniteSymbols2[1];
+
+	                        if (unitedSymbols === null) {
+	                            row.push(extraSymbol);
+	                            return row;
+	                        }
+
+	                        if (unitedSymbols !== null) {
+	                            row[row.length - 1] = unitedSymbols;
+	                        }
+
+	                        if (extraSymbol !== null) {
+	                            row.push(extraSymbol);
+	                        }
+
+	                        return row;
+	                    }, []);
+	                });
+	            }
+	        },
+	        toString: {
+
+	            /**
+	             *
+	             * @returns {string}
+	             */
+
+	            value: function toString() {
+	                return this.toArray().map(function (row) {
+	                    return row.join("");
+	                }).join("\n");
+	            }
+	        }
+	    });
+
+	    return TuiNode;
+	})();
+
+	module.exports = TuiNode;
+
+	/**
+	 * @typedef {Object} ObjectClientRect
+	 * @property {Number} bottom
+	 * @property {Number} height
+	 * @property {Number} left
+	 * @property {Number} right
+	 * @property {Number} top
+	 * @property {Number} width
+	 */
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+	var TuiNode = _interopRequire(__webpack_require__(4));
+
+	var TextSerializer = _interopRequire(__webpack_require__(12));
+
+	var TuiText = (function (_TuiNode) {
+	  /**
+	   * @param {Node} node
+	   * @param {CssStyle} style
+	   * @param {Object} [options={}]
+	   * @param {Number[]} [options.scale]
+	   * @constructor
+	   */
+
+	  function TuiText(node, style, options) {
+	    _classCallCheck(this, TuiText);
+
+	    _get(Object.getPrototypeOf(TuiText.prototype), "constructor", this).call(this, node);
+	    if (node.nodeType !== 3) {
+	      throw new Error("Only text node is supported");
+	    }
+
+	    var range = node.ownerDocument.createRange();
+	    range.selectNodeContents(node);
+
+	    this.options = options || {};
+
+	    /**
+	     * @type {ClientRect}
+	     */
+	    this.boundingBox = this.getNormalizedClientRectOf(range.getBoundingClientRect(), this.options);
+
+	    /**
+	     * @type {ObjectClientRect[]}
+	     */
+	    this.clientRects = this.normalizeClientRects(range.getClientRects(), this.options);
+
+	    this.content = node.textContent;
+
+	    this.style = style;
+	  }
+
+	  _inherits(TuiText, _TuiNode);
+
+	  _createClass(TuiText, {
+	    toArray: {
+
+	      /**
+	       *
+	       * @returns {Array<Array<(TuiSymbol)>>}
+	       */
+
+	      value: function toArray() {
+	        return new TextSerializer(this, this.options).serialize();
+	      }
+	    }
+	  });
+
+	  return TuiText;
+	})(TuiNode);
+
+	module.exports = TuiText;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	/**
+	 *
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @returns {string}
+	 */
+	exports.ansi = ansi;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var ansiColors = {
+	    // # Styles
+	    bold: ["\u001b[1m", "\u001b[22m"],
+	    italic: ["\u001b[3m", "\u001b[23m"],
+	    underline: ["\u001b[4m", "\u001b[24m"],
+	    strikethrough: ["\u001b[9m", "\u001b[29m"],
+
+	    // # Text colors
+	    // ## Grayscale
+	    "rgb(255, 255, 255)": ["\u001b[37m", "\u001b[39m"],
+	    "rgb(128, 128, 128)": ["\u001b[90m", "\u001b[39m"],
+	    "rgb(0, 0, 0)": ["\u001b[30m", "\u001b[39m"],
+	    // ## Colors
+	    "rgb(0, 0, 255)": ["\u001b[34m", "\u001b[39m"],
+	    "rgb(0, 255, 255)": ["\u001b[36m", "\u001b[39m"],
+	    "rgb(0, 128, 0)": ["\u001b[32m", "\u001b[39m"],
+	    "rgb(255, 0, 255)": ["\u001b[35m", "\u001b[39m"],
+	    "rgb(255, 0, 0)": ["\u001b[31m", "\u001b[39m"],
+	    "rgb(255, 255, 0)": ["\u001b[33m", "\u001b[39m"],
+	    "rgba(0, 0, 0, 0)": ["", ""],
+
+	    // # Background colors
+	    // ## Grayscale
+	    "rgb(255, 255, 255)BG": ["\u001b[47m", "\u001b[49m"],
+	    "rgb(0, 0, 0)BG": ["\u001b[49;5;8m", "\u001b[49m"],
+	    "rgb(128, 128, 128)BG": ["\u001b[40m", "\u001b[49m"],
+	    // ## Colors
+	    "rgb(0, 0, 255)BG": ["\u001b[44m", "\u001b[49m"],
+	    "rgb(0, 255, 255)BG": ["\u001b[46m", "\u001b[49m"],
+	    "rgb(0, 128, 0)BG": ["\u001b[42m", "\u001b[49m"],
+	    "rgb(255, 0, 255)BG": ["\u001b[45m", "\u001b[49m"],
+	    "rgb(255, 0, 0)BG": ["\u001b[41m", "\u001b[49m"],
+	    "rgb(255, 255, 0)BG": ["\u001b[43m", "\u001b[49m"],
+	    "rgba(0, 0, 0, 0)BG": ["", ""]
+	};
+
+	/**
+	 *
+	 * @param {string} string
+	 * @param {string[]} style
+	 * @returns {*}
+	 */
+	function wrapString(string, style) {
+	    var pair = ansiColors[style];
+
+	    if (!pair) {
+	        return string;
+	    }
+
+	    return pair[0] + string + pair[1];
+	}
+
+	/**
+	 *
+	 * @param {TuiSymbol} symbol
+	 * @returns {string[]}
+	 */
+	function ansiSymbol(symbol) {
+	    var character = wrapString(symbol.char, symbol.style.color);
+	    character = wrapString(character, symbol.style.backgroundColor + "BG");
+
+	    if (symbol.style.fontStyle === "italic") {
+	        character = wrapString(character, "italic");
+	    }
+
+	    if (symbol.style.fontWeight === "bold") {
+	        character = wrapString(character, "bold");
+	    }
+
+	    if (symbol.style.textDecoration === "underline") {
+	        character = wrapString(character, "underline");
+	    }
+
+	    if (symbol.style.textDecoration === "line-through") {
+	        character = wrapString(character, "strikethrough");
+	    }
+
+	    return character;
+	}
+	function ansi(box) {
+	    return box.map(function (row) {
+	        return row.map(ansiSymbol).join("");
+	    }).join("\n");
+	}
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	/**
+	 *
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @returns {string}
+	 */
+	exports.html = html;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var serializeStyle = _interopRequire(__webpack_require__(15));
+
+	var AllHtmlEntities = __webpack_require__(18).AllHtmlEntities;
+
+	var entities = new AllHtmlEntities();
+
+	/**
+	 *
+	 * @param {TuiSymbol} symbol
+	 * @returns {string[]}
+	 */
+	function htmlSymbol(symbol) {
+	  var style = serializeStyle(symbol.style);
+
+	  return "<span style=\"" + style + "\">" + entities.encode(symbol.char) + "</span>";
+	}
+	function html(box) {
+	  return box.map(function (row) {
+	    return row.map(htmlSymbol).join("");
+	  }).join("\n");
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	/**
+	 *
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @returns {string}
+	 */
+	exports.ascii = ascii;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 *
+	 * @param {TuiSymbol} symbol
+	 * @returns {string}
+	 */
+	function asciiSymbol(symbol) {
+	  return symbol.char;
+	}
+	function ascii(box) {
+	  return box.map(function (row) {
+	    return row.map(asciiSymbol).join("");
+	  }).join("\n");
+	}
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+
+	/**
+	 *
+	 * @param {Array<Array<(TuiSymbol)>>} box
+	 * @returns {string[]}
+	 */
+	exports.chrome = chrome;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var serializeStyle = _interopRequire(__webpack_require__(15));
+
+	/**
+	 * @param {TuiSymbol} symbol
+	 * @returns {string[]}
+	 */
+	function chromeSymbol(symbol) {
+	    var char = "%c" + symbol.char;
+	    var style = serializeStyle(symbol.style);
+
+	    return [char, style];
+	}
+	function chrome(box) {
+	    var characters = [];
+	    var styles = [];
+
+	    box.forEach(function (row) {
+	        var rowCharacters = "";
+	        var rowStyles = [];
+
+	        row.forEach(function (symbol) {
+	            var _chromeSymbol = chromeSymbol(symbol);
+
+	            var _chromeSymbol2 = _slicedToArray(_chromeSymbol, 2);
+
+	            var character = _chromeSymbol2[0];
+	            var style = _chromeSymbol2[1];
+
+	            rowCharacters += character;
+	            rowStyles.push(style);
+	        });
+
+	        characters.push(rowCharacters);
+	        styles.push.apply(styles, rowStyles);
+	    });
+
+	    return [characters.join("\n")].concat(styles);
+	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+	var TuiSymbol = _interopRequire(__webpack_require__(14));
+
+	var _characters = __webpack_require__(16);
+
+	var BACKGROUND_CHARACTER = _characters.BACKGROUND_CHARACTER;
+	var BORDER = _characters.BORDER;
+	var SCROLL = _characters.SCROLL;
+
+	var Serializer = _interopRequire(__webpack_require__(17));
+
+	var DefaultSerializer = (function (_Serializer) {
+	    /**
+	     * @param {TuiElement} tuiElement
+	     * @param {Object} options
+	     */
+
+	    function DefaultSerializer(tuiElement, options) {
+	        _classCallCheck(this, DefaultSerializer);
+
+	        _get(Object.getPrototypeOf(DefaultSerializer.prototype), "constructor", this).call(this, tuiElement, options);
+
+	        /**
+	         * @type {CssStyle}
+	         */
+	        this.style = tuiElement.style;
+	        /**
+	         * @type {ObjectClientRect[]}
+	         */
+	        this.clientRects = tuiElement.clientRects;
+	        /**
+	         * @type {ObjectClientRect}
+	         */
+	        this.boundingBox = tuiElement.boundingBox;
+	        /**
+	         * @type {Object}
+	         */
+	        this.scroll = tuiElement.scroll;
+	        /**
+	         * @type {Object[]}
+	         */
+	        this.content = tuiElement.content;
+	    }
+
+	    _inherits(DefaultSerializer, _Serializer);
+
+	    _createClass(DefaultSerializer, {
+	        fillBox: {
+	            /**
+	             * @param {ObjectClientRect} clientRect
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function fillBox(clientRect) {
+	                var width = clientRect.width;
+	                var height = clientRect.height;
+
+	                var background = new TuiSymbol(BACKGROUND_CHARACTER, {
+	                    color: this.style.color,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                var box = new Array(height);
+	                for (var y = 0; y < height; y++) {
+	                    box[y] = new Array(width);
+	                    for (var x = 0; x < width; x++) {
+	                        box[y][x] = background;
+	                    }
+	                }
+
+	                return box;
+	            }
+	        },
+	        fillLeftBorder: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ObjectClientRect} clientRect
+	             */
+
+	            value: function fillLeftBorder(box, clientRect) {
+	                if (!this.style.borderLeftWidth) {
+	                    return;
+	                }
+
+	                var leftBorder = new TuiSymbol(BORDER.SOLID.LEFT, {
+	                    color: this.style.borderLeftColor,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                var height = clientRect.height;
+
+	                for (var y = 0; y < height; y++) {
+	                    box[y][0] = leftBorder;
+	                }
+	            }
+	        },
+	        fillRightBorder: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ObjectClientRect} clientRect
+	             */
+
+	            value: function fillRightBorder(box, clientRect) {
+	                if (!this.style.borderRightWidth) {
+	                    return;
+	                }
+
+	                var rightBorder = new TuiSymbol(BORDER.SOLID.RIGHT, {
+	                    color: this.style.borderRightColor,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                var height = clientRect.height;
+	                var width = clientRect.width;
+
+	                for (var y = 0; y < height; y++) {
+	                    box[y][width - 1] = rightBorder;
+	                }
+	            }
+	        },
+	        fillTopBorder: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ObjectClientRect} clientRect
+	             */
+
+	            value: function fillTopBorder(box, clientRect) {
+	                if (!this.style.borderTopWidth) {
+	                    return;
+	                }
+
+	                var topBorder = new TuiSymbol(BORDER.SOLID.TOP, {
+	                    color: this.style.borderTopColor,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                var height = clientRect.height;
+	                var width = clientRect.width;
+
+	                for (var x = 1; x < width - 1; x++) {
+	                    box[0][x] = topBorder;
+	                }
+
+	                // Top Left corner
+	                if (box[0][0].char === BORDER.SOLID.LEFT) {
+	                    box[0][0] = new TuiSymbol(BORDER.SOLID.TOP_LEFT, {
+	                        color: this.style.borderTopColor,
+	                        backgroundColor: this.style.backgroundColor
+	                    });
+	                }
+
+	                // Top Right corner
+	                if (box[0][width - 1].char === BORDER.SOLID.RIGHT) {
+	                    box[0][width - 1] = new TuiSymbol(BORDER.SOLID.TOP_RIGHT, {
+	                        color: this.style.borderTopColor,
+	                        backgroundColor: this.style.backgroundColor
+	                    });
+	                }
+	            }
+	        },
+	        fillBottomBorder: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ObjectClientRect} clientRect
+	             */
+
+	            value: function fillBottomBorder(box, clientRect) {
+	                if (!this.style.borderBottomWidth) {
+	                    return;
+	                }
+
+	                var bottomBorder = new TuiSymbol(BORDER.SOLID.BOTTOM, {
+	                    color: this.style.borderBottomColor,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                var height = clientRect.height;
+	                var width = clientRect.width;
+
+	                for (var x = 1; x < width - 1; x++) {
+	                    box[height - 1][x] = bottomBorder;
+	                }
+
+	                // Bottom Left corner
+	                if (box[height - 1][0].char === BORDER.SOLID.LEFT) {
+	                    box[height - 1][0] = new TuiSymbol(BORDER.SOLID.BOTTOM_LEFT, {
+	                        color: this.style.borderTopColor,
+	                        backgroundColor: this.style.backgroundColor
+	                    });
+	                }
+
+	                // Bottom Right corner
+	                if (box[height - 1][width - 1].char === BORDER.SOLID.RIGHT) {
+	                    box[height - 1][width - 1] = new TuiSymbol(BORDER.SOLID.BOTTOM_RIGHT, {
+	                        color: this.style.borderTopColor,
+	                        backgroundColor: this.style.backgroundColor
+	                    });
+	                }
+	            }
+	        },
+	        hasHorizontalScrollBars: {
+
+	            /**
+	             * @param {ObjectClientRect} clientRect
+	             * @returns {boolean}
+	             */
+
+	            value: function hasHorizontalScrollBars(clientRect) {
+	                var overflow = this.style.overflow;
+
+	                if (overflow === "visible" || overflow === "hidden") {
+	                    return false;
+	                }
+
+	                return this.scroll.scrollWidth > clientRect.width;
+	            }
+	        },
+	        hasVerticalScrollBars: {
+
+	            /**
+	             * @param {ObjectClientRect} clientRect
+	             * @returns {boolean}
+	             */
+
+	            value: function hasVerticalScrollBars(clientRect) {
+	                var overflow = this.style.overflow;
+
+	                if (overflow === "visible" || overflow === "hidden") {
+	                    return false;
+	                }
+
+	                return this.scroll.scrollHeight > clientRect.height;
+	            }
+	        },
+	        getTuiBorderSize: {
+
+	            /**
+	             * @param {Number} borderSize
+	             * @returns {Number}
+	             */
+
+	            value: function getTuiBorderSize(borderSize) {
+	                if (borderSize > 0) {
+	                    return 1;
+	                }
+
+	                return 0;
+	            }
+	        },
+	        renderVerticalScrollBar: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ObjectClientRect} clientRect
+	             */
+
+	            value: function renderVerticalScrollBar(box, clientRect) {
+	                /* jshint maxstatements: 20, maxcomplexity: 7 */
+	                if (!this.hasVerticalScrollBars(clientRect)) {
+	                    return;
+	                }
+
+	                var borderRightWidth = this.getTuiBorderSize(this.style.borderRightWidth);
+	                var borderBottomWidth = this.getTuiBorderSize(this.style.borderBottomWidth);
+	                var borderTopWidth = this.getTuiBorderSize(this.style.borderTopWidth);
+	                var height = clientRect.height;
+	                var availableScrollHeight = height - borderBottomWidth - borderTopWidth;
+	                var scrollHeight = this.scroll.scrollHeight;
+	                var scrollTop = this.scroll.scrollTop;
+
+	                var trackHeight = Math.max(Math.floor(height / scrollHeight * availableScrollHeight), 1);
+	                var trackTop = Math.floor(scrollTop / scrollHeight * availableScrollHeight);
+	                var trackBottom = trackTop + trackHeight;
+
+	                var scrollBarBackground = new TuiSymbol(SCROLL.BACKGROUND, {
+	                    color: this.style.color,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                var scrollBarTrack = new TuiSymbol(SCROLL.TRACK, {
+	                    color: this.style.color,
+	                    backgroundColor: this.style.backgroundColor
+	                });
+
+	                // Fill and Track
+	                for (var y = borderTopWidth; y < box.length - borderBottomWidth; y++) {
+	                    var row = box[y];
+	                    var scrollBarPosition = row.length - borderRightWidth - 1;
+	                    if (y >= trackTop && y <= trackBottom) {
+	                        row[scrollBarPosition] = scrollBarTrack;
+	                    } else {
+	                        row[scrollBarPosition] = scrollBarBackground;
+	                    }
+	                }
+	            }
+	        },
+	        renderHorizontalScrollBar: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ObjectClientRect} clientRect
+	             */
+
+	            value: function renderHorizontalScrollBar(box, clientRect) {
+	                if (!this.hasHorizontalScrollBars(clientRect)) {
+	                    return;
+	                }
+
+	                return box;
+	            }
+	        },
+	        renderBox: {
+
+	            /**
+	             * @param {ObjectClientRect} clientRect
+	             * @param {Boolean} hasLeftBorder
+	             * @param {Boolean} hasRightBorder
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function renderBox(clientRect, _ref) {
+	                var hasLeftBorder = _ref.hasLeftBorder;
+	                var hasRightBorder = _ref.hasRightBorder;
+
+	                var box = this.fillBox(clientRect);
+	                if (hasLeftBorder) {
+	                    this.fillLeftBorder(box, clientRect);
+	                }
+	                if (hasRightBorder) {
+	                    this.fillRightBorder(box, clientRect);
+	                }
+	                this.fillTopBorder(box, clientRect);
+	                this.fillBottomBorder(box, clientRect);
+	                this.renderVerticalScrollBar(box, clientRect);
+	                box = this.shiftBox(box, clientRect);
+
+	                return box;
+	            }
+	        },
+	        renderBoxes: {
+
+	            /**
+	             * @returns {Array<Array<Array<(TuiSymbol)>>>}
+	             */
+
+	            value: function renderBoxes() {
+	                var _this = this;
+
+	                return this.clientRects.map(function (clientRect, index, _ref) {
+	                    var length = _ref.length;
+
+	                    var hasLeftBorder = index === 0;
+	                    var hasRightBorder = index === length - 1;
+	                    return _this.renderBox(clientRect, { hasLeftBorder: hasLeftBorder, hasRightBorder: hasRightBorder });
+	                });
+	            }
+	        },
+	        cropBoxUsing: {
+
+	            /**
+	             *
+	             * @param {Number} bottom
+	             * @param {Number} right
+	             * @param {Number} top
+	             * @param {Number} left
+	             * @returns {Function}
+	             */
+
+	            value: function cropBoxUsing(_ref) {
+	                var bottom = _ref.bottom;
+	                var right = _ref.right;
+	                var top = _ref.top;
+	                var left = _ref.left;
+
+	                /* jshint maxcomplexity: 7 */
+	                /**
+	                 * @param {Array<Array<(TuiSymbol)>>} box
+	                 * @return {Array<Array<(TuiSymbol)>>}
+	                 */
+	                return function cropBox(box) {
+	                    if (bottom <= 0 || right <= 0) {
+	                        return [[]];
+	                    }
+	                    var croppedBox = new Array(bottom);
+
+	                    for (var y = top; y < box.length && y < bottom; y++) {
+	                        var row = box[y];
+	                        croppedBox[y] = new Array(right);
+
+	                        if (!row) {
+	                            continue;
+	                        }
+
+	                        for (var x = left; x < row.length && x < right; x++) {
+	                            croppedBox[y][x] = row[x];
+	                        }
+	                    }
+
+	                    return croppedBox;
+	                };
+	            }
+	        },
+	        cropBoxFactory: {
+
+	            /**
+	             * @returns {Function} crop function
+	             */
+
+	            value: function cropBoxFactory() {
+	                // Do not crop
+	                if (this.style.overflow === "visible") {
+	                    return function (box) {
+	                        return box;
+	                    };
+	                }
+
+	                var bottom = this.boundingBox.bottom - this.getTuiBorderSize(this.style.borderBottomWidth);
+	                var right = this.boundingBox.right - this.getTuiBorderSize(this.style.borderRightWidth);
+	                var top = this.boundingBox.top + this.getTuiBorderSize(this.style.borderTopWidth);
+	                var left = this.boundingBox.left + this.getTuiBorderSize(this.style.borderLeftWidth);
+
+	                return this.cropBoxUsing({ bottom: bottom, right: right, top: top, left: left });
+	            }
+	        },
+	        renderContent: {
+
+	            /**
+	             * @returns {Array<Array<Array<(TuiSymbol)>>>}
+	             */
+
+	            value: function renderContent() {
+	                return this.content.map(function (item) {
+	                    return item.toArray();
+	                }).map(this.cropBoxFactory());
+	            }
+	        },
+	        serialize: {
+
+	            /**
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function serialize() {
+	                var boxes = this.renderBoxes();
+	                var content = this.renderContent();
+
+	                return boxes.concat(content).reduce(this.mergeBoxes.bind(this), []);
+	            }
+	        }
+	    });
+
+	    return DefaultSerializer;
+	})(Serializer);
+
+	module.exports = DefaultSerializer;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+	var ElementSerializer = _interopRequire(__webpack_require__(10));
+
+	var InputSerializer = (function (_ElementSerializer) {
+	    /**
+	     * @param {TuiElement} tuiElement
+	     * @param {Object} options
+	     */
+
+	    function InputSerializer(tuiElement, options) {
+	        _classCallCheck(this, InputSerializer);
+
+	        _get(Object.getPrototypeOf(InputSerializer.prototype), "constructor", this).call(this, tuiElement, options);
+
+	        this.properties = tuiElement.properties;
+	    }
+
+	    _inherits(InputSerializer, _ElementSerializer);
+
+	    _createClass(InputSerializer, {
+	        getInputMaxContentWidth: {
+
+	            /**
+	             * Max width of input text in viewport
+	             *
+	             * @returns {Number}
+	             */
+
+	            value: function getInputMaxContentWidth() {
+	                var leftInputBorder = this.style.borderLeftWidth + this.style.paddingLeft;
+	                var rightInputBorder = this.style.borderRightWidth + this.style.paddingRight;
+
+	                return this.boundingBox.width - leftInputBorder - rightInputBorder;
+	            }
+	        },
+	        getInputTextBoundingBox: {
+
+	            /**
+	             * Return bounding box of input's value
+	             *
+	             * @returns {ObjectClientRect}
+	             */
+
+	            value: function getInputTextBoundingBox() {
+	                var width = Number(this.properties.value.length);
+	                var height = 1;
+	                var left = this.boundingBox.left;
+	                var top = this.boundingBox.top;
+
+	                left += this.style.borderLeftWidth;
+	                left += this.style.paddingLeft;
+
+	                top += this.style.borderTopWidth;
+	                top += this.style.paddingTop;
+
+	                return {
+	                    left: left,
+	                    top: top,
+	                    bottom: top + height,
+	                    right: left + width,
+	                    height: height,
+	                    width: width
+	                };
+	            }
+	        },
+	        getVisibleTextRange: {
+
+	            /**
+	             * Returns range which should fit into input
+	             *
+	             * @returns {{start: Number, end: Number}}
+	             */
+
+	            value: function getVisibleTextRange() {
+	                /* jshint maxstatements: 20 */
+	                var _properties = this.properties;
+	                var value = _properties.value;
+	                var selectionEnd = _properties.selectionEnd;
+
+	                var inputContentWidth = this.getInputMaxContentWidth();
+	                var halfOfInputContentWidth = inputContentWidth / 2;
+	                var start = Math.floor(selectionEnd - halfOfInputContentWidth) + 1;
+	                var end = Math.ceil(selectionEnd + halfOfInputContentWidth) + 1;
+
+	                // Cursor at the end of the box
+	                if (value.length === selectionEnd && value.length + 1 > inputContentWidth) {
+	                    end -= 1;
+	                }
+
+	                if (start < 0) {
+	                    end -= start;
+	                    start = 0;
+	                }
+
+	                if (end > value.length) {
+	                    start -= end - value.length;
+	                    end = value.length;
+	                }
+
+	                if (start < 0) {
+	                    start = 0;
+	                }
+
+	                return {
+	                    start: start,
+	                    end: end
+	                };
+	            }
+	        },
+	        renderCursorBox: {
+
+	            /**
+	             * @param {ObjectClientRect} textBoundingBox
+	             * @param {Object} visibleTextRange
+	             * @param {Number} visibleTextRange.start
+	             * @param {Number} visibleTextRange.end
+	             * @returns {Array<Array<TuiSymbol>>}
+	             */
+
+	            value: function renderCursorBox(textBoundingBox, visibleTextRange) {
+	                // Render cursor
+	                var _properties = this.properties;
+	                var value = _properties.value;
+	                var selectionEnd = _properties.selectionEnd;
+
+	                var cursorWidth = 1;
+	                var textAtCursor = value.substr(selectionEnd, cursorWidth);
+
+	                // End of text
+	                if (textAtCursor === "") {
+	                    textAtCursor = " ";
+	                }
+
+	                var cursorLeft = textBoundingBox.left + selectionEnd - visibleTextRange.start;
+	                var cursorRight = cursorLeft + cursorWidth;
+
+	                var clientRect = {
+	                    left: cursorLeft,
+	                    top: textBoundingBox.top,
+	                    bottom: textBoundingBox.bottom,
+	                    right: cursorRight,
+	                    height: textBoundingBox.height,
+	                    width: cursorWidth
+	                };
+
+	                return this.fillClientRectsWithText({
+	                    content: textAtCursor,
+
+	                    // Invert background and text color
+	                    style: {
+	                        color: this.style.backgroundColor,
+	                        backgroundColor: this.style.color
+	                    },
+	                    clientRects: [clientRect]
+	                });
+	            }
+	        },
+	        renderInputTextBox: {
+
+	            /**
+	             * @param {ClientRect} textBoundingBox
+	             * @param {Object} visibleTextRange
+	             * @param {Number} visibleTextRange.start
+	             * @param {Number} visibleTextRange.end
+	             * @returns {Array<Array<TuiSymbol>>}
+	             */
+
+	            value: function renderInputTextBox(textBoundingBox, visibleTextRange) {
+	                var content = this.properties.value.slice(visibleTextRange.start, visibleTextRange.end);
+
+	                return this.fillClientRectsWithText({
+	                    content: content,
+	                    style: this.style,
+	                    clientRects: [textBoundingBox]
+	                });
+	            }
+	        },
+	        serialize: {
+
+	            /**
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function serialize() {
+	                // Compute common measurements
+	                var textBoundingBox = this.getInputTextBoundingBox();
+	                var visibleTextRange = this.getVisibleTextRange();
+
+	                // Render
+	                var inputBox = _get(Object.getPrototypeOf(InputSerializer.prototype), "serialize", this).call(this);
+	                var textBox = this.renderInputTextBox(textBoundingBox, visibleTextRange);
+	                var cursorBox = this.renderCursorBox(textBoundingBox, visibleTextRange);
+
+	                inputBox = this.mergeBoxes(inputBox, textBox);
+	                inputBox = this.mergeBoxes(inputBox, cursorBox);
+
+	                return inputBox;
+	            }
+	        }
+	    });
+
+	    return InputSerializer;
+	})(ElementSerializer);
+
+	module.exports = InputSerializer;
 
 /***/ },
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	exports.isSameStyleSymbol = isSameStyleSymbol;
-	exports.isTransparentColor = isTransparentColor;
-	exports.isTransparentCharacter = isTransparentCharacter;
+	var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
-	var _characters = __webpack_require__(16);
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-	/**
-	 *
-	 * @param {(TuiSymbol)} symbolA
-	 * @param {(TuiSymbol)} symbolB
-	 */
+	var TuiSymbol = _interopRequire(__webpack_require__(14));
 
-	function isSameStyleSymbol(symbolA, symbolB) {
-	    return symbolA.style.color === symbolB.style.color && symbolA.style.fontStyle === symbolB.style.fontStyle && symbolA.style.fontWeight === symbolB.style.fontWeight && symbolA.style.textDecoration === symbolB.style.textDecoration && symbolA.style.backgroundColor === symbolB.style.backgroundColor;
-	}
+	var BACKGROUND_CHARACTER = __webpack_require__(16).BACKGROUND_CHARACTER;
 
-	/**
-	 *
-	 * @param {string} color
-	 * @returns {boolean}
-	 */
-
-	function isTransparentColor(color) {
-	    return color === 'rgba(0, 0, 0, 0)' || color === 'transparent';
-	}
-
-	/**
-	 *
-	 * @param {string} char
-	 * @param {CssStyle} style
-	 * @returns {boolean}
-	 */
-
-	function isTransparentCharacter(char, style) {
-	    return char === _characters.BACKGROUND_CHARACTER && isTransparentColor(style.backgroundColor);
-	}
-
-	var TuiSymbol = (function () {
-	    /**
-	     *
-	     * @param {string} char
-	     * @param {{color: string, backgroundColor: string}} style
-	     */
-
-	    function TuiSymbol(char, style) {
-	        _classCallCheck(this, TuiSymbol);
-
-	        if (isTransparentCharacter(char, style)) {
-	            char = _characters.BACKGROUND_CHARACTER;
-	        }
-
-	        this.char = char;
-	        this.style = style;
-	    }
-
-	    _createClass(TuiSymbol, [{
-	        key: 'toString',
-
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        value: function toString() {
-	            return this.char;
-	        }
-	    }]);
-
-	    return TuiSymbol;
-	})();
-
-	exports['default'] = TuiSymbol;
-	var emptySymbol = new TuiSymbol(_characters.BACKGROUND_CHARACTER, {
-	    color: 'rgba(0, 0, 0, 0)',
-	    backgroundColor: 'rgba(0, 0, 0, 0)'
-	});
-	exports.emptySymbol = emptySymbol;
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _tuiSymbol = __webpack_require__(12);
-
-	var _tuiSymbol2 = _interopRequireDefault(_tuiSymbol);
-
-	var _characters = __webpack_require__(16);
-
-	var _serializer = __webpack_require__(17);
-
-	var _serializer2 = _interopRequireDefault(_serializer);
+	var Serializer = _interopRequire(__webpack_require__(17));
 
 	var TextSerializer = (function (_Serializer) {
 	  function TextSerializer(tuiText, options) {
 	    _classCallCheck(this, TextSerializer);
 
-	    _get(Object.getPrototypeOf(TextSerializer.prototype), 'constructor', this).call(this, tuiText, options);
+	    _get(Object.getPrototypeOf(TextSerializer.prototype), "constructor", this).call(this, tuiText, options);
 
 	    /**
 	     * @type {CssStyle}
@@ -1763,33 +1629,34 @@ var htmlTui =
 
 	  _inherits(TextSerializer, _Serializer);
 
-	  _createClass(TextSerializer, [{
-	    key: 'serialize',
+	  _createClass(TextSerializer, {
+	    serialize: {
 
-	    /**
-	     * @returns {Array<Array<(TuiSymbol)>>}
-	     */
-	    value: function serialize() {
-	      if (this.boundingBox.width === 0 || this.boundingBox.height === 0) {
-	        return [[]];
+	      /**
+	       * @returns {Array<Array<(TuiSymbol)>>}
+	       */
+
+	      value: function serialize() {
+	        if (this.boundingBox.width === 0 || this.boundingBox.height === 0) {
+	          return [[]];
+	        }
+
+	        return this.fillClientRectsWithText({
+	          style: this.style,
+	          content: this.content,
+	          clientRects: this.clientRects
+	        });
 	      }
-
-	      return this.fillClientRectsWithText({
-	        style: this.style,
-	        content: this.content,
-	        clientRects: this.clientRects
-	      });
 	    }
-	  }]);
+	  });
 
 	  return TextSerializer;
-	})(_serializer2['default']);
+	})(Serializer);
 
-	exports['default'] = TextSerializer;
-	module.exports = exports['default'];
+	module.exports = TextSerializer;
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1941,25 +1808,110 @@ var htmlTui =
 
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+	/**
+	 *
+	 * @param {(TuiSymbol)} symbolA
+	 * @param {(TuiSymbol)} symbolB
+	 */
+	exports.isSameStyleSymbol = isSameStyleSymbol;
+
+	/**
+	 *
+	 * @param {string} color
+	 * @returns {boolean}
+	 */
+	exports.isTransparentColor = isTransparentColor;
+
+	/**
+	 *
+	 * @param {string} char
+	 * @param {CssStyle} style
+	 * @returns {boolean}
+	 */
+	exports.isTransparentCharacter = isTransparentCharacter;
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+	var BACKGROUND_CHARACTER = __webpack_require__(16).BACKGROUND_CHARACTER;
 
-	exports['default'] = serializeStyle;
-	var TEXT_STYLES = [['color', 'color'], ['font-style', 'fontStyle'], ['font-weight', 'fontWeight'], ['text-decoration', 'textDecoration'], ['background-color', 'backgroundColor']];
+	function isSameStyleSymbol(symbolA, symbolB) {
+	    return symbolA.style.color === symbolB.style.color && symbolA.style.fontStyle === symbolB.style.fontStyle && symbolA.style.fontWeight === symbolB.style.fontWeight && symbolA.style.textDecoration === symbolB.style.textDecoration && symbolA.style.backgroundColor === symbolB.style.backgroundColor;
+	}
+
+	function isTransparentColor(color) {
+	    return color === "rgba(0, 0, 0, 0)" || color === "transparent";
+	}
+
+	function isTransparentCharacter(char, style) {
+	    return char === BACKGROUND_CHARACTER && isTransparentColor(style.backgroundColor);
+	}
+
+	var TuiSymbol = (function () {
+	    /**
+	     *
+	     * @param {string} char
+	     * @param {{color: string, backgroundColor: string}} style
+	     */
+
+	    function TuiSymbol(char, style) {
+	        _classCallCheck(this, TuiSymbol);
+
+	        if (isTransparentCharacter(char, style)) {
+	            char = BACKGROUND_CHARACTER;
+	        }
+
+	        this.char = char;
+	        this.style = style;
+	    }
+
+	    _createClass(TuiSymbol, {
+	        toString: {
+
+	            /**
+	             *
+	             * @returns {string}
+	             */
+
+	            value: function toString() {
+	                return this.char;
+	            }
+	        }
+	    });
+
+	    return TuiSymbol;
+	})();
+
+	exports["default"] = TuiSymbol;
+	var emptySymbol = new TuiSymbol(BACKGROUND_CHARACTER, {
+	    color: "rgba(0, 0, 0, 0)",
+	    backgroundColor: "rgba(0, 0, 0, 0)"
+	});
+	exports.emptySymbol = emptySymbol;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
 
 	/**
 	 * @param {Object} symbolStyle
 	 * @returns {String}
 	 */
-
+	module.exports = serializeStyle;
+	var TEXT_STYLES = [["color", "color"], ["font-style", "fontStyle"], ["font-weight", "fontWeight"], ["text-decoration", "textDecoration"], ["background-color", "backgroundColor"]];
 	function serializeStyle(symbolStyle) {
 	    return TEXT_STYLES.reduce(function (style, _ref) {
 	        var _ref2 = _slicedToArray(_ref, 2);
@@ -1968,54 +1920,52 @@ var htmlTui =
 	        var styleProperty = _ref2[1];
 
 	        if (symbolStyle[styleProperty]) {
-	            style += cssProperty + ':' + symbolStyle[styleProperty] + ';';
+	            style += "" + cssProperty + ":" + symbolStyle[styleProperty] + ";";
 	        }
 
 	        return style;
-	    }, '');
+	    }, "");
 	}
-
-	module.exports = exports['default'];
 
 /***/ },
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var BACKGROUND_CHARACTER = ' ';
+	var BACKGROUND_CHARACTER = " ";
 
 	exports.BACKGROUND_CHARACTER = BACKGROUND_CHARACTER;
 	var BORDER = {
 	    SOLID: {
-	        TOP: '─',
-	        LEFT: '│',
-	        RIGHT: '│',
-	        BOTTOM: '─',
-	        TOP_LEFT: '┌',
-	        TOP_RIGHT: '┐',
-	        BOTTOM_LEFT: '└',
-	        BOTTOM_RIGHT: '┘'
+	        TOP: "─",
+	        LEFT: "│",
+	        RIGHT: "│",
+	        BOTTOM: "─",
+	        TOP_LEFT: "┌",
+	        TOP_RIGHT: "┐",
+	        BOTTOM_LEFT: "└",
+	        BOTTOM_RIGHT: "┘"
 	    },
 	    DOUBLE: {
-	        TOP: '═',
-	        LEFT: '║',
-	        RIGHT: '║',
-	        BOTTOM: '═',
-	        TOP_LEFT: '╔',
-	        TOP_RIGHT: '╗',
-	        BOTTOM_LEFT: '╚',
-	        BOTTOM_RIGHT: '╝'
+	        TOP: "═",
+	        LEFT: "║",
+	        RIGHT: "║",
+	        BOTTOM: "═",
+	        TOP_LEFT: "╔",
+	        TOP_RIGHT: "╗",
+	        BOTTOM_LEFT: "╚",
+	        BOTTOM_RIGHT: "╝"
 	    }
 	};
 
 	exports.BORDER = BORDER;
 	var SCROLL = {
-	    BACKGROUND: '¦',
-	    TRACK: '║'
+	    BACKGROUND: "¦",
+	    TRACK: "║"
 	};
 	exports.SCROLL = SCROLL;
 
@@ -2023,27 +1973,26 @@ var htmlTui =
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _tuiSymbol = __webpack_require__(14);
 
-	var _tuiSymbol = __webpack_require__(12);
+	var TuiSymbol = _interopRequire(_tuiSymbol);
 
-	var _tuiSymbol2 = _interopRequireDefault(_tuiSymbol);
+	var isTransparentColor = _tuiSymbol.isTransparentColor;
+	var emptySymbol = _tuiSymbol.emptySymbol;
 
-	var _characters = __webpack_require__(16);
+	var BACKGROUND_CHARACTER = __webpack_require__(16).BACKGROUND_CHARACTER;
 
-	var _htmlEntities = __webpack_require__(18);
+	var AllHtmlEntities = __webpack_require__(18).AllHtmlEntities;
 
-	var entities = new _htmlEntities.AllHtmlEntities();
+	var entities = new AllHtmlEntities();
 
 	/**
 	 * @abstract
@@ -2064,180 +2013,186 @@ var htmlTui =
 	        this.options = options || {};
 	    }
 
-	    _createClass(Serializer, [{
-	        key: 'shiftBox',
+	    _createClass(Serializer, {
+	        shiftBox: {
 
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} box
-	         * @param {ClientRect} clientRect
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function shiftBox(box, clientRect) {
-	            var left = clientRect.left;
-	            var top = clientRect.top;
-	            var paddingLeft = new Array(left);
-	            var paddingTop = new Array(0);
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} box
+	             * @param {ClientRect} clientRect
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
 
-	            box.forEach(function shiftRow(row) {
-	                row.unshift.apply(row, paddingLeft);
-	            });
+	            value: function shiftBox(box, clientRect) {
+	                var left = clientRect.left;
+	                var top = clientRect.top;
+	                var paddingLeft = new Array(left);
+	                var paddingTop = new Array(0);
 
-	            while (top > 0) {
-	                box.unshift(paddingTop);
-	                top--;
-	            }
-
-	            return box;
-	        }
-	    }, {
-	        key: 'mergeSymbols',
-
-	        /**
-	         * @param {TuiSymbol|undefined} symbolA
-	         * @param {TuiSymbol|undefined} symbolB
-	         * @returns {TuiSymbol}
-	         */
-	        value: function mergeSymbols(symbolA, symbolB) {
-	            /* jshint maxcomplexity: 6, maxstatements: 20 */
-	            if (typeof symbolA === 'undefined' && typeof symbolB === 'undefined') {
-	                return _tuiSymbol.emptySymbol;
-	            }
-
-	            if (typeof symbolA === 'undefined') {
-	                return symbolB;
-	            }
-
-	            if (typeof symbolB === 'undefined') {
-	                return symbolA;
-	            }
-
-	            var char = symbolB.char;
-	            var _symbolB$style = symbolB.style;
-	            var color = _symbolB$style.color;
-	            var fontStyle = _symbolB$style.fontStyle;
-	            var fontWeight = _symbolB$style.fontWeight;
-	            var textDecoration = _symbolB$style.textDecoration;
-	            var backgroundColor = _symbolB$style.backgroundColor;
-
-	            if (symbolB.char === _characters.BACKGROUND_CHARACTER) {
-	                char = symbolA.char;
-	                color = symbolA.style.color;
-	                fontStyle = symbolA.style.fontStyle;
-	                fontWeight = symbolA.style.fontWeight;
-	                textDecoration = symbolA.style.textDecoration;
-	            }
-
-	            if ((0, _tuiSymbol.isTransparentColor)(backgroundColor)) {
-	                backgroundColor = symbolA.style.backgroundColor;
-	            }
-
-	            return new _tuiSymbol2['default'](char, { color: color, backgroundColor: backgroundColor, fontStyle: fontStyle, fontWeight: fontWeight, textDecoration: textDecoration });
-	        }
-	    }, {
-	        key: 'mergeBoxRow',
-
-	        /**
-	         * @param {Array<(TuiSymbol|undefined)>} rowA
-	         * @param {Array<(TuiSymbol|undefined)>} rowB
-	         * @returns {Array<(TuiSymbol)>}
-	         */
-	        value: function mergeBoxRow(rowA, rowB) {
-	            if (typeof rowA === 'undefined' && typeof rowB === 'undefined') {
-	                return [];
-	            }
-
-	            if (typeof rowA === 'undefined') {
-	                return rowB;
-	            }
-
-	            if (typeof rowB === 'undefined') {
-	                return rowA;
-	            }
-
-	            var maxWidth = Math.max(rowA.length, rowB.length);
-	            var row = new Array(maxWidth);
-	            for (var x = 0; x < maxWidth; x++) {
-	                row[x] = this.mergeSymbols(rowA[x], rowB[x]);
-	            }
-
-	            return row;
-	        }
-	    }, {
-	        key: 'mergeBoxes',
-
-	        /**
-	         * @param {Array<Array<(TuiSymbol)>>} layerA
-	         * @param {Array<Array<(TuiSymbol)>>} layerB
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function mergeBoxes(layerA, layerB) {
-	            var maxHeight = Math.max(layerA.length, layerB.length);
-	            var box = new Array(maxHeight);
-
-	            for (var y = 0; y < maxHeight; y++) {
-	                box[y] = this.mergeBoxRow(layerA[y], layerB[y]);
-	            }
-
-	            return box;
-	        }
-	    }, {
-	        key: 'fillClientRectsWithText',
-
-	        /**
-	         * @param {String} content
-	         * @param {ObjectClientRect} clientRects
-	         * @param {CssStyle} style
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function fillClientRectsWithText(_ref) {
-	            var _this = this;
-
-	            var content = _ref.content;
-	            var clientRects = _ref.clientRects;
-	            var style = _ref.style;
-
-	            var keepWhiteSpaces = style.whiteSpace === 'pre' || style.whiteSpace === 'pre-wrap';
-
-	            if (!keepWhiteSpaces) {
-	                content = content.replace(/\s\s+/g, ' ');
-	            }
-
-	            // As text will be filled in clientRects - no reason to respect new lines
-	            content = content.replace(/\n|\r|\v/g, '');
-	            content = entities.decode(content);
-
-	            return clientRects.reduce(function (box, clientRect) {
-	                // Remove white-spaces at the line-break
-	                if (!keepWhiteSpaces) {
-	                    content = content.trim();
-	                }
-
-	                var symbols = Array.from(content.slice(0, clientRect.width), function (symbol) {
-	                    return new _tuiSymbol2['default'](symbol, style);
+	                box.forEach(function shiftRow(row) {
+	                    row.unshift.apply(row, paddingLeft);
 	                });
 
-	                content = content.slice(clientRect.width);
+	                while (top > 0) {
+	                    box.unshift(paddingTop);
+	                    top--;
+	                }
 
-	                var textBox = [symbols.splice(0, clientRect.width)];
-	                return _this.mergeBoxes(box, _this.shiftBox(textBox, clientRect));
-	            }, []);
-	        }
-	    }, {
-	        key: 'serialize',
+	                return box;
+	            }
+	        },
+	        mergeSymbols: {
 
-	        /**
-	         * @returns {Array<Array<(TuiSymbol)>>}
-	         */
-	        value: function serialize() {
-	            return [[]];
+	            /**
+	             * @param {TuiSymbol|undefined} symbolA
+	             * @param {TuiSymbol|undefined} symbolB
+	             * @returns {TuiSymbol}
+	             */
+
+	            value: function mergeSymbols(symbolA, symbolB) {
+	                /* jshint maxcomplexity: 6, maxstatements: 20 */
+	                if (typeof symbolA === "undefined" && typeof symbolB === "undefined") {
+	                    return emptySymbol;
+	                }
+
+	                if (typeof symbolA === "undefined") {
+	                    return symbolB;
+	                }
+
+	                if (typeof symbolB === "undefined") {
+	                    return symbolA;
+	                }
+
+	                var char = symbolB.char;
+	                var _symbolB$style = symbolB.style;
+	                var color = _symbolB$style.color;
+	                var fontStyle = _symbolB$style.fontStyle;
+	                var fontWeight = _symbolB$style.fontWeight;
+	                var textDecoration = _symbolB$style.textDecoration;
+	                var backgroundColor = _symbolB$style.backgroundColor;
+
+	                if (symbolB.char === BACKGROUND_CHARACTER) {
+	                    char = symbolA.char;
+	                    color = symbolA.style.color;
+	                    fontStyle = symbolA.style.fontStyle;
+	                    fontWeight = symbolA.style.fontWeight;
+	                    textDecoration = symbolA.style.textDecoration;
+	                }
+
+	                if (isTransparentColor(backgroundColor)) {
+	                    backgroundColor = symbolA.style.backgroundColor;
+	                }
+
+	                return new TuiSymbol(char, { color: color, backgroundColor: backgroundColor, fontStyle: fontStyle, fontWeight: fontWeight, textDecoration: textDecoration });
+	            }
+	        },
+	        mergeBoxRow: {
+
+	            /**
+	             * @param {Array<(TuiSymbol|undefined)>} rowA
+	             * @param {Array<(TuiSymbol|undefined)>} rowB
+	             * @returns {Array<(TuiSymbol)>}
+	             */
+
+	            value: function mergeBoxRow(rowA, rowB) {
+	                if (typeof rowA === "undefined" && typeof rowB === "undefined") {
+	                    return [];
+	                }
+
+	                if (typeof rowA === "undefined") {
+	                    return rowB;
+	                }
+
+	                if (typeof rowB === "undefined") {
+	                    return rowA;
+	                }
+
+	                var maxWidth = Math.max(rowA.length, rowB.length);
+	                var row = new Array(maxWidth);
+	                for (var x = 0; x < maxWidth; x++) {
+	                    row[x] = this.mergeSymbols(rowA[x], rowB[x]);
+	                }
+
+	                return row;
+	            }
+	        },
+	        mergeBoxes: {
+
+	            /**
+	             * @param {Array<Array<(TuiSymbol)>>} layerA
+	             * @param {Array<Array<(TuiSymbol)>>} layerB
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function mergeBoxes(layerA, layerB) {
+	                var maxHeight = Math.max(layerA.length, layerB.length);
+	                var box = new Array(maxHeight);
+
+	                for (var y = 0; y < maxHeight; y++) {
+	                    box[y] = this.mergeBoxRow(layerA[y], layerB[y]);
+	                }
+
+	                return box;
+	            }
+	        },
+	        fillClientRectsWithText: {
+
+	            /**
+	             * @param {String} content
+	             * @param {ObjectClientRect} clientRects
+	             * @param {CssStyle} style
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function fillClientRectsWithText(_ref) {
+	                var _this = this;
+
+	                var content = _ref.content;
+	                var clientRects = _ref.clientRects;
+	                var style = _ref.style;
+
+	                var keepWhiteSpaces = style.whiteSpace === "pre" || style.whiteSpace === "pre-wrap";
+
+	                if (!keepWhiteSpaces) {
+	                    content = content.replace(/\s\s+/g, " ");
+	                }
+
+	                // As text will be filled in clientRects - no reason to respect new lines
+	                content = content.replace(/\n|\r|\v/g, "");
+	                content = entities.decode(content);
+
+	                return clientRects.reduce(function (box, clientRect) {
+	                    // Remove white-spaces at the line-break
+	                    if (!keepWhiteSpaces) {
+	                        content = content.trim();
+	                    }
+
+	                    var symbols = Array.from(content.slice(0, clientRect.width), function (symbol) {
+	                        return new TuiSymbol(symbol, style);
+	                    });
+
+	                    content = content.slice(clientRect.width);
+
+	                    var textBox = [symbols.splice(0, clientRect.width)];
+	                    return _this.mergeBoxes(box, _this.shiftBox(textBox, clientRect));
+	                }, []);
+	            }
+	        },
+	        serialize: {
+
+	            /**
+	             * @returns {Array<Array<(TuiSymbol)>>}
+	             */
+
+	            value: function serialize() {
+	                return [[]];
+	            }
 	        }
-	    }]);
+	    });
 
 	    return Serializer;
 	})();
 
-	exports['default'] = Serializer;
-	module.exports = exports['default'];
+	module.exports = Serializer;
 
 /***/ },
 /* 18 */
