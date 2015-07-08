@@ -2,8 +2,8 @@
 
 HTML to TUI (Text user interface) renderer. It translates DOM Nodes into Text interface.
 
-[Demo](http://azproduction.github.io/html-tui/example/)
-[Playground](http://jsbin.com/wixosi/1/edit?html,output)
+ - [Live example](http://azproduction.github.io/html-tui/example/)
+ - [Playground](http://jsbin.com/yocupi/1/edit?html,js,output)
 
 ## Example
 
@@ -26,5 +26,3 @@ $ npm run ansi
 ```
 
 ![](index.png)
-
-[Live example](http://azproduction.github.io/html-tui/example/)
